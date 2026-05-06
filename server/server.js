@@ -85,17 +85,30 @@ app.use("/api/dashboard", adminRoutes)
 app.use("/api/reports", adminRoutes)
 
 
-const buildPath = path.join(process.cwd(), 'client', 'dist');
+const buildPath = path.resolve(__dirname, '../client/dist');
 
 // 5. Static File Serving & SPA Routing
 if (process.env.NODE_ENV === "production") {
     // Serve static files from the build directory
-    app.use(express.static(buildPath));
+    app.use(express.static(buildPath, {
+        index: false // Disable automatic index.html serving to handle it via catch-all
+    }));
 
-    // 5. Static File Serving & SPA Routing - Catch-all middleware
-    app.use((req, res) => {
+    // Handle all other routes by serving index.html
+    app.get("*", (req, res, next) => {
+        // If the request is for an API route, skip to 404 handler
+        if (req.path.startsWith('/api')) {
+            return next();
+        }
+        
+        // If the request looks like a static file (has an extension) and we're here, it means it wasn't found
+        if (path.extname(req.path)) {
+            return res.status(404).json({ success: false, message: "Asset not found" });
+        }
+
         res.sendFile(path.join(buildPath, 'index.html'), (err) => {
             if (err) {
+                console.error("Error sending index.html:", err);
                 res.status(500).send("Build file index.html not found. Check logs.");
             }
         });
@@ -105,6 +118,12 @@ if (process.env.NODE_ENV === "production") {
         res.send("API is running... (Development Mode)");
     });
 }
+
+// 404 Handler for API
+app.use("/api/*", (req, res) => {
+    res.status(404).json({ success: false, message: "API route not found" });
+});
+
 
 
 
