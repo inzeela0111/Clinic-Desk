@@ -57,9 +57,9 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-//BODY PARSER (middleware)
-app.use(express.json()),
-app.use(express.urlencoded({ extended: true }))
+// BODY PARSER (middleware)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 //default Route
@@ -85,7 +85,7 @@ app.use("/api/dashboard", adminRoutes)
 app.use("/api/reports", adminRoutes)
 
 
-const buildPath = path.resolve(__dirname, '../client/dist');
+const buildPath = path.join(process.cwd(), 'client', 'dist');
 
 // 5. Static File Serving & SPA Routing
 if (process.env.NODE_ENV === "production") {
@@ -121,4 +121,5 @@ app.use(errorHandler)
 
 app.listen(PORT ,() => {
     console.log(`SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue)
+    console.log(`Static files path: ${buildPath}`.yellow)
 })
