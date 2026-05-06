@@ -95,7 +95,7 @@ if (process.env.NODE_ENV === "production") {
     }));
 
     // Handle all other routes by serving index.html
-    app.get("*", (req, res, next) => {
+    app.get("(*)", (req, res, next) => {
         // If the request is for an API route, skip to 404 handler
         if (req.path.startsWith('/api')) {
             return next();
@@ -120,7 +120,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // 404 Handler for API
-app.use("/api/*", (req, res) => {
+app.use("/api/(*)", (req, res) => {
     res.status(404).json({ success: false, message: "API route not found" });
 });
 
