@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useGetDoctorsQuery } from '../services/doctorsApi';
+
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Stethoscope, Menu, X, ArrowRight, Brain, CalendarCheck, ShieldCheck, UserCheck, Star, CheckCircle, Search, Clock, Sparkles } from 'lucide-react';
@@ -9,6 +11,16 @@ const stagger = { show:{transition:{staggerChildren:0.13}} };
 export default function LandingPage() {
   const [open,setOpen] = useState(false);
   const [sym,setSym] = useState('');
+  const { data: doctors } = useGetDoctorsQuery();
+  const doctorCount = doctors ? doctors.length : 0;
+  
+  // Logic: 110 -> 100+, 25 -> 20+, <10 -> count
+  const displayCount = doctorCount >= 100 
+    ? `${Math.floor(doctorCount / 100) * 100}+` 
+    : doctorCount >= 10 
+      ? `${Math.floor(doctorCount / 10) * 10}+` 
+      : doctorCount;
+
   const scroll = id => { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); setOpen(false); };
 
   return (
@@ -73,7 +85,7 @@ export default function LandingPage() {
           </div>
           <div className="absolute -bottom-4 -left-4 bg-white border border-slate-200 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
             <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center"><Stethoscope className="w-5 h-5 text-blue-600"/></div>
-            <div><p className="text-xl font-extrabold text-slate-900">250+</p><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expert Doctors</p></div>
+            <div><p className="text-xl font-extrabold text-slate-900">{displayCount}</p><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expert Doctors</p></div>
           </div>
         </motion.div>
       </section>
@@ -81,7 +93,7 @@ export default function LandingPage() {
       {/* STATS */}
       <section className="border-y border-slate-200 bg-white py-12 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[{v:'250+',l:'Expert Doctors'},{v:'10k+',l:'Happy Patients'},{v:'99.9%',l:'Uptime'},{v:'4.9★',l:'Avg Rating'}].map(s=>(
+          {[{v:displayCount,l:'Expert Doctors'},{v:'10k+',l:'Happy Patients'},{v:'99.9%',l:'Uptime'},{v:'4.9★',l:'Avg Rating'}].map(s=>(
             <div key={s.l}><p className="text-3xl font-extrabold text-blue-600">{s.v}</p><p className="text-sm text-slate-500 mt-1">{s.l}</p></div>
           ))}
         </div>

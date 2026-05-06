@@ -1,5 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
+import path from 'node:path';
+import { fileURLToPath } from "url";
 import colors from "colors"
 import cors from "cors"
 import connectDB from "./config/dbConfig.js"
@@ -15,6 +17,10 @@ import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import "./cron/slotCron.js";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 dotenv.config()
@@ -42,11 +48,11 @@ app.use(express.urlencoded({ extended: true }))
 
 
 //default Route
-app.get("/" , (req , res) => {
-     res.json({
-        message : "WELCOME TO CLINIC-DESK API ....."
-     })
-})
+// app.get("/" , (req , res) => {
+//      res.json({
+//         message : "WELCOME TO CLINIC-DESK API ....."
+//      })
+// })
 
 //Routes Mounting
 app.use("/api/auth", authRoutes)
@@ -62,6 +68,37 @@ app.use("/api/payments", paymentRoutes)
 // Dashboard / Reports aliases matching standard
 app.use("/api/dashboard", adminRoutes)
 app.use("/api/reports", adminRoutes)
+
+
+const buildPath = path.resolve(__dirname, '../client/dist');
+
+// 5. Static File Serving & SPA Routing
+if (process.env.NODE_ENV === "production") {
+    // Serve static files from the build directory
+    app.use(express.static(buildPath));
+
+    // Express v5 requires a named parameter for wildcards (/*splat)
+    app.get('/*splat', (req, res) => {
+        res.sendFile(path.join(buildPath, 'index.html'), (err) => {
+            if (err) {
+                // If index.html is missing, this provides a clearer error
+                res.status(500).send("Build file index.html not found. Ensure you ran 'npm run build' in the client folder.");
+            }
+        });
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("API is running... (Development Mode)");
+    });
+}
+
+
+
+
+
+
+
+
 
 
 //ERROR HANDLER
