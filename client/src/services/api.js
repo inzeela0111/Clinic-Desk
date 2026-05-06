@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { logout } from '../features/auth/authSlice';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_BASE_URL,
+  baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
   prepareHeaders: (headers, { getState }) => {
     // Prefer Redux state, fallback to localStorage in case of race condition
     const token = getState().auth.token || localStorage.getItem('token');

@@ -93,11 +93,10 @@ if (process.env.NODE_ENV === "production") {
     app.use(express.static(buildPath));
 
     // Express v5 requires a named parameter for wildcards (/*splat)
-    app.get('/*splat', (req, res) => {
+    app.get('*', (req, res) => {
         res.sendFile(path.join(buildPath, 'index.html'), (err) => {
             if (err) {
-                // If index.html is missing, this provides a clearer error
-                res.status(500).send("Build file index.html not found. Ensure you ran 'npm run build' in the client folder.");
+                res.status(500).send("Build file index.html not found. Check logs.");
             }
         });
     });
