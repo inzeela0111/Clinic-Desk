@@ -1,0 +1,30 @@
+services:
+  # Clinic-Desk Full Stack Service
+  - type: web
+    name: clinic-desk
+    env: node
+    plan: free
+    region: singapore # Choose your preferred region
+    buildCommand: npm run build
+    startCommand: npm run server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5005
+      - key: MONGO_URI
+        sync: false # Set this in Render Dashboard
+      - key: JWT_SECRET
+        sync: false # Set this in Render Dashboard
+      - key: OPENROUTER_API_KEY
+        sync: false # Set this in Render Dashboard
+      - key: RAZORPAY_KEY_ID
+        sync: false # Set this in Render Dashboard
+      - key: RAZORPAY_KEY_SECRET
+        sync: false # Set this in Render Dashboard
+      - key: FRONTEND_URL
+        value: https://clinic-desk.onrender.com # Update this with your actual Render URL after first deploy
+      - key: VITE_API_BASE_URL
+        value: /api # Points to the same server
+      - key: VITE_RAZORPAY_KEY_ID
+        sync: false # Set this in Render Dashboard

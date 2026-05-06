@@ -4,12 +4,12 @@
   "description": "A full-stack doctor appointment booking system where users can search doctors, book appointments, and admins can manage doctors, slots, and bookings with a complete dashboard.",
   "license": "ISC",
   "author": "",
-  "main": "server.js",
+  "main": "server/server.js",
   "type": "module",
   "scripts": {
     "server": "node server/server.js",
     "client": "cd client && npm run dev",
-    "build" : "npm install && cd client && npm install ",
+    "build": "npm install && cd client && npm install && npm run build",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
