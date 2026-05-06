@@ -103,8 +103,14 @@ if (process.env.NODE_ENV === "production") {
         
         // If the request looks like a static file (has an extension) and we're here, it means it wasn't found
         if (path.extname(req.path)) {
-            return res.status(404).json({ success: false, message: "Asset not found" });
+            res.setHeader('Content-Type', 'text/plain');
+            return res.status(404).send(`Asset not found: ${req.path}`);
         }
+
+        // Disable caching for index.html to ensure users always get the latest asset hashes
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
 
         res.sendFile(path.join(buildPath, 'index.html'), (err) => {
             if (err) {
