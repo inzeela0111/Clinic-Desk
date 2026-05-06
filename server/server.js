@@ -92,8 +92,8 @@ if (process.env.NODE_ENV === "production") {
     // Serve static files from the build directory
     app.use(express.static(buildPath));
 
-    // Express v5 requires a named parameter for wildcards (/*splat)
-    app.get('*', (req, res) => {
+    // 5. Static File Serving & SPA Routing - Catch-all middleware
+    app.use((req, res) => {
         res.sendFile(path.join(buildPath, 'index.html'), (err) => {
             if (err) {
                 res.status(500).send("Build file index.html not found. Check logs.");
