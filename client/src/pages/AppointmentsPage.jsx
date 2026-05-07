@@ -2,7 +2,6 @@ import { useGetAllAppointmentsQuery, useGetMyAppointmentsQuery, useCancelAppoint
 import { format } from 'date-fns';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-import { useCreateOrderMutation, useVerifyPaymentMutation } from '../services/paymentsApi';
 
 const AppointmentsPage = () => {
   const { user } = useSelector(state => state.auth);
@@ -10,8 +9,6 @@ const AppointmentsPage = () => {
   const { data: adminData, isLoading: adminLoading } = useGetAllAppointmentsQuery(undefined, { skip: !user?.isAdmin });
   const { data: myData, isLoading: myLoading } = useGetMyAppointmentsQuery(undefined, { skip: user?.isAdmin });
   const [cancelAppointment, { isLoading: isCancelling }] = useCancelAppointmentMutation();
-  const [createOrder] = useCreateOrderMutation();
-  const [verifyPayment] = useVerifyPaymentMutation();
 
   const appointments = user?.isAdmin ? (adminData?.data || []) : (myData?.data || []);
   const isLoading = user?.isAdmin ? adminLoading : myLoading;
@@ -22,25 +19,6 @@ const AppointmentsPage = () => {
       toast.success('Appointment cancelled successfully');
     } catch (err) {
       toast.error(err?.data?.message || 'Failed to cancel appointment');
-    }
-  };
-
-  const handlePayment = async (appt) => {
-    try {
-      // 1. Create Stripe session on backend
-      const res = await createOrder({ 
-        appointmentId: appt._id, 
-        amount: appt.doctorId?.fees || 500 
-      }).unwrap();
-
-      if (res.success && res.url) {
-        // Redirect to Stripe Checkout page
-        window.location.href = res.url;
-      } else {
-        toast.error('Failed to initiate payment');
-      }
-    } catch (err) {
-      toast.error('Payment failed to start');
     }
   };
 
@@ -65,9 +43,9 @@ const AppointmentsPage = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
-                 <tr>
+                <tr>
                   <td colSpan="4" className="px-6 py-12 text-center text-slate-500">Loading appointments...</td>
-                 </tr>
+                </tr>
               ) : (
                 appointments.map((appt) => (
                   <tr key={appt._id} className="hover:bg-slate-50 transition">
@@ -98,18 +76,7 @@ const AppointmentsPage = () => {
                           >
                             Cancel
                           </button>
-                          {appt.paymentStatus !== 'paid' && (
-                            <button 
-                              onClick={() => handlePayment(appt)}
-                              className="text-xs font-semibold text-blue-600 hover:text-blue-700 border border-blue-200 hover:bg-blue-50 px-2 py-1 rounded transition"
-                            >
-                              Pay Now
-                            </button>
-                          )}
                         </div>
-                      )}
-                      {appt.paymentStatus === 'paid' && (
-                         <span className="ml-3 text-[10px] font-bold text-emerald-600 uppercase tracking-tight">● Paid</span>
                       )}
                     </td>
                   </tr>

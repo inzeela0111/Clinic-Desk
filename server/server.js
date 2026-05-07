@@ -15,7 +15,6 @@ import slotRoutes from "./routes/slotRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
-import paymentRoutes from "./routes/paymentRoutes.js";
 import runSlotAutomation from "./cron/slotCron.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -98,7 +97,6 @@ app.use("/api/slots", slotRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
-app.use("/api/payments", paymentRoutes);
 app.use("/api/dashboard", adminRoutes);
 app.use("/api/reports", adminRoutes);
 

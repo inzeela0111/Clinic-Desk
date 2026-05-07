@@ -16,9 +16,7 @@ services:
         sync: false
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
       - key: FRONTEND_URL
-        value: https://clinic-desk.onrender.com # Update this if your URL is different
+        value: https://clinic-desk.onrender.com
       - key: VITE_API_BASE_URL
-        value: /api # Points to the same server
+        value: /api
