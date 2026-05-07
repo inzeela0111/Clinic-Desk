@@ -85,45 +85,10 @@ app.use("/api/dashboard", adminRoutes)
 app.use("/api/reports", adminRoutes)
 
 
-const buildPath = path.resolve(__dirname, '../client/dist');
-
-// 5. Static File Serving & SPA Routing
-if (process.env.NODE_ENV === "production") {
-    // Serve static files from the build directory
-    app.use(express.static(buildPath, {
-        index: false // Disable automatic index.html serving to handle it via catch-all
-    }));
-
-    // Handle all other routes by serving index.html
-    app.get(/.*/, (req, res, next) => {
-        // If the request is for an API route, skip to 404 handler
-        if (req.path.startsWith('/api')) {
-            return next();
-        }
-        
-        // If the request looks like a static file (has an extension) and we're here, it means it wasn't found
-        if (path.extname(req.path)) {
-            res.setHeader('Content-Type', 'text/plain');
-            return res.status(404).send(`Asset not found: ${req.path}`);
-        }
-
-        // Disable caching for index.html to ensure users always get the latest asset hashes
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('Expires', '0');
-
-        res.sendFile(path.join(buildPath, 'index.html'), (err) => {
-            if (err) {
-                console.error("Error sending index.html:", err);
-                res.status(500).send("Build file index.html not found. Check logs.");
-            }
-        });
-    });
-} else {
-    app.get("/", (req, res) => {
-        res.send("API is running... (Development Mode)");
-    });
-}
+// Default route for API health check
+app.get("/", (req, res) => {
+    res.send("Clinic-Desk API is running...");
+});
 
 // 404 Handler for API
 app.use("/api", (req, res) => {
