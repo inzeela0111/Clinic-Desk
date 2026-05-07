@@ -328,7 +328,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} ClinicDesk. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ClinicDesk. All rights reserved. <span className="opacity-30 text-[10px]">v1.0.1</span></p>
           <div className="flex gap-6">{['Twitter','LinkedIn','Instagram'].map(s=><a key={s} href="#" className="hover:text-blue-600 transition">{s}</a>)}</div>
         </div>
       </footer>
