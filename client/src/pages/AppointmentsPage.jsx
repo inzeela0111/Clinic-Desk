@@ -27,50 +27,18 @@ const AppointmentsPage = () => {
 
   const handlePayment = async (appt) => {
     try {
-      // 1. Create order on backend
+      // 1. Create Stripe session on backend
       const res = await createOrder({ 
         appointmentId: appt._id, 
         amount: appt.doctorId?.fees || 500 
       }).unwrap();
 
-      if (!res.success) return toast.error('Failed to initiate payment');
-
-      // 2. Open Razorpay Checkout
-      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
-      
-      if (!razorpayKey || razorpayKey === 'undefined') {
-        console.error('Razorpay Key ID is missing! Please check your environment variables.');
-        return toast.error('Payment system is not configured correctly. Please contact support.');
+      if (res.success && res.url) {
+        // Redirect to Stripe Checkout page
+        window.location.href = res.url;
+      } else {
+        toast.error('Failed to initiate payment');
       }
-
-      const options = {
-        key: razorpayKey,
-        amount: res.order.amount,
-        currency: res.order.currency,
-        name: "ClinicDesk",
-        description: `Appointment with Dr. ${appt.doctorId?.name}`,
-        order_id: res.order.id,
-        handler: async (response) => {
-          try {
-            await verifyPayment({
-              ...response,
-              appointmentId: appt._id
-            }).unwrap();
-            toast.success('Payment Successful!');
-          } catch (err) {
-            toast.error('Payment Verification Failed');
-          }
-        },
-        prefill: {
-          name: user?.name,
-          email: user?.email,
-        },
-        theme: { color: "#2563eb" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-
     } catch (err) {
       toast.error('Payment failed to start');
     }
