@@ -26,16 +26,47 @@ dotenv.config()
 const PORT = process.env.PORT || 5000
 const app = express()
 
-// Global Error Catchers
+// --- 1. GLOBAL ERROR HANDLERS ---
 process.on('uncaughtException', (err) => {
     console.error('UNCAUGHT EXCEPTION! 💥', err);
 });
-
 process.on('unhandledRejection', (err) => {
     console.error('UNHANDLED REJECTION! 💥', err);
 });
 
-// DB Connection
+// --- 2. STATIC FILE SERVING (Move to Top) ---
+const rootDir = process.cwd();
+const buildPath = path.resolve(rootDir, 'client', 'dist');
+
+// Log what we found
+console.log(`[Server] Root Dir: ${rootDir}`);
+console.log(`[Server] Looking for build at: ${buildPath}`);
+if (fs.existsSync(buildPath)) {
+    console.log(`[Server] ✅ Build folder exists!`.green);
+} else {
+    console.log(`[Server] ❌ Build folder NOT found at ${buildPath}`.red);
+}
+
+// Serve assets with absolute priority and correct MIME types
+app.use('/assets', express.static(path.join(buildPath, 'assets'), {
+    immutable: true,
+    maxAge: '1y',
+    fallthrough: false, // Don't let asset 404s hit the SPA catch-all
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
+
+app.use(express.static(buildPath));
+
+// --- 3. STANDARD MIDDLEWARE ---
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// --- 4. DB CONNECTION ---
 connectDB().then(() => {
     console.log("Database connected successfully".green);
     runSlotAutomation();
@@ -43,54 +74,7 @@ connectDB().then(() => {
     console.error("Database connection failed:".red, err.message);
 });
 
-// CORS Configuration
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:3000',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// --- PRODUCTION STATIC SERVING ---
-const rootDir = process.cwd();
-const buildPath = path.resolve(rootDir, 'client', 'dist');
-
-// Middleware to log asset requests (helpful for debugging)
-app.use((req, res, next) => {
-    if (req.path.startsWith('/assets/')) {
-        console.log(`[Asset Request] ${req.path}`);
-    }
-    next();
-});
-
-// Serve static files with explicit fallthrough disabled for assets
-app.use('/assets', express.static(path.join(buildPath, 'assets'), {
-    immutable: true,
-    maxAge: '1y',
-    fallthrough: false
-}));
-
-// Serve other static files (favicon, etc.)
-app.use(express.static(buildPath));
-
-// Routes Mounting
+// --- 5. API ROUTES ---
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/slots", slotRoutes);
@@ -100,29 +84,28 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/dashboard", adminRoutes);
 app.use("/api/reports", adminRoutes);
 
-// SPA Routing
+// --- 6. SPA CATCH-ALL ---
 app.get(/.*/, (req, res) => {
-    // API 404 handler
+    // If it's an API route that wasn't caught, it's a 404
     if (req.path.startsWith('/api')) {
-        return res.status(404).json({ success: false, message: "API route not found" });
+        return res.status(404).json({ success: false, message: "API endpoint not found" });
+    }
+
+    // If it's a file request (has extension) but reach here, it's missing
+    if (path.extname(req.path)) {
+        console.log(`[Server] 404 Asset: ${req.path}`.yellow);
+        return res.status(404).type('text/plain').send(`Asset not found: ${req.path}`);
     }
 
     const indexPath = path.join(buildPath, 'index.html');
-    
-    // If it's a file request (has extension) but wasn't served by express.static
-    if (path.extname(req.path)) {
-        console.log(`[Server] Missing Asset: ${req.path}`.red);
-        return res.status(404).type('text/plain').send(`Resource not found: ${req.path}`);
-    }
-
-    // Serve index.html for all other routes
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
         res.status(200).send(`
             <div style="font-family:sans-serif;text-align:center;padding:50px;">
-                <h1>Clinic-Desk API is running</h1>
-                <p>Website build files not found. Check Render build logs.</p>
+                <h1 style="color:#2563eb;">Clinic-Desk API is Online</h1>
+                <p>Frontend build (index.html) is missing at: <code>${buildPath}</code></p>
+                <p>Please check your Render build logs for errors during 'npm run build'.</p>
             </div>
         `);
     }
