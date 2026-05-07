@@ -72,15 +72,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- STATIC FILE SERVING ---
-// Robust path resolution for Render/Local
 const rootDir = process.cwd();
 const buildPath = path.join(rootDir, 'client', 'dist');
 
-// Log path info for debugging
 console.log(`[Server] Root Directory: ${rootDir}`);
 console.log(`[Server] Build Path: ${buildPath}`);
 
-// Serve static files from the React app
+// Serve static files
 app.use(express.static(buildPath));
 
 // Routes Mounting
@@ -96,35 +94,38 @@ app.use("/api/reports", adminRoutes);
 
 // SPA Routing: Handle any requests that don't match the ones above
 app.get(/.*/, (req, res) => {
-    // If it's an API request that wasn't caught, return 404 JSON
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ success: false, message: "API route not found" });
     }
 
     const indexPath = path.join(buildPath, 'index.html');
     
-    // Check if the request is for an asset file that doesn't exist
     if (path.extname(req.path)) {
         console.log(`[Server] Asset 404: ${req.path}`);
         return res.status(404).send(`Asset not found: ${req.path}`);
     }
 
-    // Otherwise, serve index.html for SPA routing
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
-        console.log(`[Server] index.html not found at ${indexPath}`);
+        console.log(`[Server] index.html NOT found at ${indexPath}`.red);
+        // Diagnosis: List client folder
+        try {
+            const clientFiles = fs.readdirSync(path.join(rootDir, 'client'));
+            console.log(`[Server] Files in client/ directory: ${clientFiles.join(', ')}`);
+        } catch (e) {
+            console.log(`[Server] Could not read client directory: ${e.message}`);
+        }
+
         res.status(200).json({ 
             success: true, 
-            message: "Clinic-Desk API is running. (Front-end build not found)" 
+            message: "Clinic-Desk API is running. (Frontend build is missing. Check logs for directory structure.)" 
         });
     }
 });
 
-// Global Error Handler
 app.use(errorHandler);
 
-// Start Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
 });
