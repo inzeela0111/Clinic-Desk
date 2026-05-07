@@ -1,11 +1,11 @@
 services:
-  # 1. BACKEND: Web Service
+  # Clinic-Desk Unified Full Stack Service
   - type: web
-    name: clinic-desk-api
+    name: clinic-desk
     env: node
     plan: free
     region: singapore
-    buildCommand: npm install
+    buildCommand: npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -21,27 +21,8 @@ services:
       - key: RAZORPAY_KEY_SECRET
         sync: false
       - key: FRONTEND_URL
-        value: https://clinic-desk.onrender.com # Update this after frontend is deployed
-
-  # 2. FRONTEND: Static Site (Free on Render)
-  - type: static
-    name: clinic-desk-frontend
-    env: static
-    plan: free
-    region: singapore
-    buildCommand: cd client && npm install && npm run build
-    publishPath: client/dist
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-store, no-cache, must-revalidate, proxy-revalidate
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
+        value: https://clinic-desk.onrender.com # Update this if your URL is different
       - key: VITE_API_BASE_URL
-        value: https://clinic-desk-api.onrender.com/api # Update this after backend is deployed
+        value: /api # Points to the same server
       - key: VITE_RAZORPAY_KEY_ID
         sync: false
-

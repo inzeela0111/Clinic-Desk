@@ -1,5 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
+import path from 'path';
+import { fileURLToPath } from 'url';
 import colors from "colors"
 import cors from "cors"
 
@@ -14,6 +16,9 @@ import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import runSlotAutomation from "./cron/slotCron.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load Environment Variables
 dotenv.config()
@@ -65,11 +70,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health Check
-app.get("/", (req, res) => {
-    res.status(200).json({ success: true, message: "Clinic-Desk API is alive and kicking!" });
-});
-
 // Routes Mounting
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
@@ -83,6 +83,25 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/dashboard", adminRoutes);
 app.use("/api/reports", adminRoutes);
 
+// Static File Serving & SPA Routing for Production
+const buildPath = path.resolve(__dirname, '../client/dist');
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(buildPath));
+
+    app.get(/.*/, (req, res, next) => {
+        if (req.path.startsWith('/api')) {
+            return next();
+        }
+        res.sendFile(path.join(buildPath, 'index.html'));
+    });
+} else {
+    // Health Check for Dev
+    app.get("/", (req, res) => {
+        res.status(200).json({ success: true, message: "Clinic-Desk API is alive and kicking (Dev)!" });
+    });
+}
+
 // 404 Handler for API
 app.use("/api", (req, res) => {
     res.status(404).json({ success: false, message: "API route not found" });
@@ -94,4 +113,4 @@ app.use(errorHandler);
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
-});
+});
