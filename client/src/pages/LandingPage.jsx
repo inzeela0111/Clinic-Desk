@@ -79,10 +79,7 @@ export default function LandingPage() {
           <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] ring-1 ring-slate-900/5">
             <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80" alt="Doctor" className="w-full h-full object-cover"/>
           </div>
-          <div className="absolute -top-4 -right-4 bg-white border border-slate-200 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
-            <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center"><CheckCircle className="w-5 h-5 text-green-600"/></div>
-            <div><p className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Verified</p><p className="text-xs font-bold text-slate-900">100% Secure Payments</p></div>
-          </div>
+
           <div className="absolute -bottom-4 -left-4 bg-white border border-slate-200 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
             <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center"><Stethoscope className="w-5 h-5 text-blue-600"/></div>
             <div><p className="text-xl font-extrabold text-slate-900">{displayCount}</p><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expert Doctors</p></div>
