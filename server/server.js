@@ -69,32 +69,26 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- DIAGNOSTICS: FIND THE BUILD FOLDER ---
-const rootDir = process.cwd();
-console.log(`[Diagnostic] Current Working Directory: ${rootDir}`);
+// --- STATIC FILE SERVING CONFIG ---
+// Try multiple paths to find the dist folder on Render
+const possiblePaths = [
+    path.resolve(process.cwd(), 'client', 'dist'),
+    path.resolve(__dirname, '..', 'client', 'dist'),
+    path.resolve(process.cwd(), 'dist'),
+];
 
-const findDist = (dir) => {
-    try {
-        const files = fs.readdirSync(dir);
-        for (const file of files) {
-            const fullPath = path.join(dir, file);
-            if (fs.statSync(fullPath).isDirectory()) {
-                if (file === 'dist') {
-                    console.log(`[Diagnostic] Found a 'dist' folder at: ${fullPath}`.cyan);
-                } else if (file !== 'node_modules' && file !== '.git') {
-                    findDist(fullPath);
-                }
-            }
-        }
-    } catch (e) {}
-};
-findDist(rootDir);
+let buildPath = possiblePaths[0];
+for (const p of possiblePaths) {
+    if (fs.existsSync(path.join(p, 'index.html'))) {
+        buildPath = p;
+        console.log(`[Server] ✅ Found valid build at: ${buildPath}`.green);
+        break;
+    }
+}
 
-// Resolve build path (Standard is client/dist)
-const buildPath = path.resolve(rootDir, 'client', 'dist');
-console.log(`[Server] Final Build Path set to: ${buildPath}`);
+console.log(`[Server] Final Build Path: ${buildPath}`);
 
-// --- STATIC FILE SERVING ---
+// Serve static files
 app.use(express.static(buildPath));
 
 // Routes Mounting
@@ -110,33 +104,40 @@ app.use("/api/reports", adminRoutes);
 
 // SPA Routing
 app.get(/.*/, (req, res) => {
+    // If it's an API request that wasn't caught, return 404 JSON
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ success: false, message: "API route not found" });
     }
 
     const indexPath = path.join(buildPath, 'index.html');
     
-    // IF THE REQUEST HAS AN EXTENSION AND IT'S NOT FOUND BY express.static
+    // Check if it's an asset request that failed
     if (path.extname(req.path)) {
-        console.log(`[Server] Asset NOT FOUND: ${req.path}`.red);
-        // DO NOT SEND HTML/JSON FOR ASSETS
+        console.log(`[Server] Asset 404: ${req.path}`.red);
         return res.status(404).type('text/plain').send(`Asset not found: ${req.path}`);
     }
 
+    // Serve index.html for SPA routing
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
-        console.log(`[Server] CRITICAL: index.html not found at ${indexPath}`.bgRed);
+        console.log(`[Server] index.html NOT found at ${indexPath}`.bgRed);
         res.status(200).send(`
-            <h1>Clinic-Desk API is running</h1>
-            <p>Frontend build not found at: <code>${buildPath}</code></p>
-            <p>Please ensure 'npm run build' was successful.</p>
+            <div style="font-family: sans-serif; padding: 20px; text-align: center;">
+                <h1 style="color: #2563eb;">Clinic-Desk API is running</h1>
+                <p>The frontend build folder was not found.</p>
+                <p>Expected location: <code>${buildPath}</code></p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="color: #666;">If you just deployed, please check the Render build logs to ensure <code>npm run build</code> finished successfully.</p>
+            </div>
         `);
     }
 });
 
+// Global Error Handler
 app.use(errorHandler);
 
+// Start Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
 });
