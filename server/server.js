@@ -95,7 +95,7 @@ app.use("/api/dashboard", adminRoutes);
 app.use("/api/reports", adminRoutes);
 
 // SPA Routing: Handle any requests that don't match the ones above
-app.get('/*', (req, res) => {
+app.get(/.*/, (req, res) => {
     // If it's an API request that wasn't caught, return 404 JSON
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ success: false, message: "API route not found" });
