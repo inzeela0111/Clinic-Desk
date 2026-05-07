@@ -36,8 +36,15 @@ const AppointmentsPage = () => {
       if (!res.success) return toast.error('Failed to initiate payment');
 
       // 2. Open Razorpay Checkout
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+      
+      if (!razorpayKey || razorpayKey === 'undefined') {
+        console.error('Razorpay Key ID is missing! Please check your environment variables.');
+        return toast.error('Payment system is not configured correctly. Please contact support.');
+      }
+
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_your_key_id',
+        key: razorpayKey,
         amount: res.order.amount,
         currency: res.order.currency,
         name: "ClinicDesk",
