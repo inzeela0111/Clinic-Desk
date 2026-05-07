@@ -25,4 +25,4 @@ services:
       - key: VITE_API_BASE_URL
         value: /api # Points to the same server
       - key: VITE_RAZORPAY_KEY_ID
-        sync: false
+        value: rzp_test_SlbzL4qE5d6saw # Provided as a fallback, but should be set in dashboard
