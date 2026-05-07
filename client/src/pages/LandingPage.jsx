@@ -85,16 +85,9 @@ export default function LandingPage() {
           <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400/20 to-indigo-400/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           
           <motion.div 
-            animate={{ 
-              y: [0, -12, 0],
-            }}
-            transition={{ 
-              duration: 4, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            whileHover={{ scale: 1.02 }}
-            className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/3] ring-1 ring-slate-900/5 transition-all duration-500"
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] ring-1 ring-slate-900/5 transition-shadow duration-500 hover:shadow-blue-500/20"
           >
             <img 
               src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80" 
@@ -103,17 +96,7 @@ export default function LandingPage() {
             />
           </motion.div>
 
-          <motion.div 
-            animate={{ 
-              y: [0, 8, 0],
-            }}
-            transition={{ 
-              duration: 5, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            className="absolute -bottom-4 -left-4 bg-white border border-slate-200 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3"
-          >
+          <div className="absolute -bottom-4 -left-4 bg-white border border-slate-200 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
             <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center">
               <Stethoscope className="w-5 h-5 text-blue-600" />
             </div>
@@ -121,7 +104,7 @@ export default function LandingPage() {
               <p className="text-xl font-extrabold text-slate-900">{displayCount}</p>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expert Doctors</p>
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       </section>
 
