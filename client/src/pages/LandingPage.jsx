@@ -75,15 +75,77 @@ export default function LandingPage() {
             <button onClick={()=>scroll('symptom-checker')} className="border border-blue-400 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 text-slate-700 font-bold px-7 py-3.5 rounded-xl bg-white transition shadow-sm">Try Symptom Checker</button>
           </motion.div>
         </motion.div>
-        <motion.div initial={{opacity:0,scale:0.92}} animate={{opacity:1,scale:1}} transition={{duration:0.7}} className="flex-1 relative max-w-lg w-full">
-          <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] ring-1 ring-slate-900/5">
-            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&q=80" alt="Doctor" className="w-full h-full object-cover"/>
-          </div>
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }} 
+          animate={{ opacity: 1, x: 0 }} 
+          transition={{ duration: 0.8 }} 
+          className="flex-1 relative max-w-lg w-full group"
+        >
+          {/* Decorative background glow */}
+          <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400/20 to-indigo-400/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          
+          <motion.div 
+            animate={{ 
+              y: [0, -15, 0],
+            }}
+            transition={{ 
+              duration: 4, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            className="relative rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(37,99,235,0.15)] aspect-[4/4.5] ring-1 ring-slate-900/5 transition-all duration-500 hover:shadow-[0_30px_70px_rgba(37,99,235,0.25)]"
+          >
+            <img 
+              src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=800&q=80" 
+              alt="Expert Doctor" 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            {/* Subtle glass overlay on bottom */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none" />
+          </motion.div>
 
-          <div className="absolute -bottom-4 -left-4 bg-white border border-slate-200 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center"><Stethoscope className="w-5 h-5 text-blue-600"/></div>
-            <div><p className="text-xl font-extrabold text-slate-900">{displayCount}</p><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Expert Doctors</p></div>
-          </div>
+          <motion.div 
+            animate={{ 
+              y: [0, 8, 0],
+              x: [0, 5, 0]
+            }}
+            transition={{ 
+              duration: 5, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+            className="absolute -bottom-6 -left-6 bg-white/90 backdrop-blur-md border border-white/20 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.1)] px-5 py-4 flex items-center gap-4 hover:scale-105 transition-transform"
+          >
+            <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Stethoscope className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="text-2xl font-extrabold text-slate-900 leading-tight">{displayCount}</p>
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Expert Doctors</p>
+            </div>
+          </motion.div>
+
+          {/* Floating badge for Quick Booking */}
+          <motion.div 
+             animate={{ 
+              y: [0, -10, 0],
+            }}
+            transition={{ 
+              duration: 3, 
+              repeat: Infinity, 
+              ease: "easeInOut" 
+            }}
+            className="absolute -top-6 -right-6 bg-white/90 backdrop-blur-md border border-white/20 rounded-2xl shadow-[0_15px_35px_rgba(0,0,0,0.1)] px-5 py-4 hidden md:flex items-center gap-3 hover:scale-105 transition-transform"
+          >
+             <div className="w-9 h-9 bg-emerald-500 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900">Instant Access</p>
+              <p className="text-[10px] text-slate-500">24/7 Support</p>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
