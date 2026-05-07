@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import colors from "colors"
 import cors from "cors"
+import fs from 'fs';
 
 // Local Imports
 import connectDB from "./config/dbConfig.js"
@@ -28,21 +29,21 @@ const app = express()
 
 // Global Error Catchers
 process.on('uncaughtException', (err) => {
-    console.error('UNCAUGHT EXCEPTION! 💥 Shutting down...', err.name, err.message);
+    console.error('UNCAUGHT EXCEPTION! 💥', err);
     process.exit(1);
 });
 
 process.on('unhandledRejection', (err) => {
-    console.error('UNHANDLED REJECTION! 💥 Shutting down...', err.name, err.message);
+    console.error('UNHANDLED REJECTION! 💥', err);
     process.exit(1);
 });
 
 // DB Connection
 connectDB().then(() => {
-    console.log("Database connected successfully, initializing automation...".green);
+    console.log("Database connected successfully".green);
     runSlotAutomation();
 }).catch(err => {
-    console.error("CRITICAL: Database connection failed during startup:".red, err.message);
+    console.error("Database connection failed:".red, err.message);
 });
 
 // CORS Configuration
@@ -70,6 +71,18 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// --- STATIC FILE SERVING ---
+// Robust path resolution for Render/Local
+const rootDir = process.cwd();
+const buildPath = path.join(rootDir, 'client', 'dist');
+
+// Log path info for debugging
+console.log(`[Server] Root Directory: ${rootDir}`);
+console.log(`[Server] Build Path: ${buildPath}`);
+
+// Serve static files from the React app
+app.use(express.static(buildPath));
+
 // Routes Mounting
 app.use("/api/auth", authRoutes);
 app.use("/api/doctors", doctorRoutes);
@@ -78,40 +91,34 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/payments", paymentRoutes);
-
-// Dashboard / Reports aliases
 app.use("/api/dashboard", adminRoutes);
 app.use("/api/reports", adminRoutes);
 
-// Static File Serving & SPA Routing for Production
-const buildPath = path.resolve(__dirname, '../client/dist');
+// SPA Routing: Handle any requests that don't match the ones above
+app.get('*', (req, res) => {
+    // If it's an API request that wasn't caught, return 404 JSON
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ success: false, message: "API route not found" });
+    }
 
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static(buildPath));
+    const indexPath = path.join(buildPath, 'index.html');
+    
+    // Check if the request is for an asset file that doesn't exist
+    if (path.extname(req.path)) {
+        console.log(`[Server] Asset 404: ${req.path}`);
+        return res.status(404).send(`Asset not found: ${req.path}`);
+    }
 
-    app.get(/.*/, (req, res, next) => {
-        // Skip for API routes
-        if (req.path.startsWith('/api')) {
-            return next();
-        }
-        
-        // If it looks like a static file (has an extension) but wasn't found by express.static
-        if (path.extname(req.path)) {
-            return res.status(404).send(`Asset not found: ${req.path}`);
-        }
-
-        res.sendFile(path.join(buildPath, 'index.html'));
-    });
-} else {
-    // Health Check for Dev
-    app.get("/", (req, res) => {
-        res.status(200).json({ success: true, message: "Clinic-Desk API is alive and kicking (Dev)!" });
-    });
-}
-
-// 404 Handler for API
-app.use("/api", (req, res) => {
-    res.status(404).json({ success: false, message: "API route not found" });
+    // Otherwise, serve index.html for SPA routing
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        console.log(`[Server] index.html not found at ${indexPath}`);
+        res.status(200).json({ 
+            success: true, 
+            message: "Clinic-Desk API is running. (Front-end build not found)" 
+        });
+    }
 });
 
 // Global Error Handler
@@ -120,12 +127,4 @@ app.use(errorHandler);
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
-    console.log(`🔍 Checking build path: ${buildPath}`.yellow);
-    import('fs').then(fs => {
-        if (fs.default.existsSync(path.join(buildPath, 'index.html'))) {
-            console.log("✅ index.html found in build directory.".green);
-        } else {
-            console.log("❌ index.html NOT found in build directory! This will cause a white screen.".red);
-        }
-    });
 });
