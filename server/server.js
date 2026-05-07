@@ -69,26 +69,26 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- STATIC FILE SERVING CONFIG ---
-// Try multiple paths to find the dist folder on Render
-const possiblePaths = [
-    path.resolve(process.cwd(), 'client', 'dist'),
-    path.resolve(__dirname, '..', 'client', 'dist'),
-    path.resolve(process.cwd(), 'dist'),
-];
+// --- PRODUCTION STATIC SERVING ---
+const rootDir = process.cwd();
+const buildPath = path.resolve(rootDir, 'client', 'dist');
 
-let buildPath = possiblePaths[0];
-for (const p of possiblePaths) {
-    if (fs.existsSync(path.join(p, 'index.html'))) {
-        buildPath = p;
-        console.log(`[Server] ✅ Found valid build at: ${buildPath}`.green);
-        break;
+// Middleware to log asset requests (helpful for debugging)
+app.use((req, res, next) => {
+    if (req.path.startsWith('/assets/')) {
+        console.log(`[Asset Request] ${req.path}`);
     }
-}
+    next();
+});
 
-console.log(`[Server] Final Build Path: ${buildPath}`);
+// Serve static files with explicit fallthrough disabled for assets
+app.use('/assets', express.static(path.join(buildPath, 'assets'), {
+    immutable: true,
+    maxAge: '1y',
+    fallthrough: false
+}));
 
-// Serve static files
+// Serve other static files (favicon, etc.)
 app.use(express.static(buildPath));
 
 // Routes Mounting
@@ -104,40 +104,34 @@ app.use("/api/reports", adminRoutes);
 
 // SPA Routing
 app.get(/.*/, (req, res) => {
-    // If it's an API request that wasn't caught, return 404 JSON
+    // API 404 handler
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ success: false, message: "API route not found" });
     }
 
     const indexPath = path.join(buildPath, 'index.html');
     
-    // Check if it's an asset request that failed
+    // If it's a file request (has extension) but wasn't served by express.static
     if (path.extname(req.path)) {
-        console.log(`[Server] Asset 404: ${req.path}`.red);
-        return res.status(404).type('text/plain').send(`Asset not found: ${req.path}`);
+        console.log(`[Server] Missing Asset: ${req.path}`.red);
+        return res.status(404).type('text/plain').send(`Resource not found: ${req.path}`);
     }
 
-    // Serve index.html for SPA routing
+    // Serve index.html for all other routes
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
-        console.log(`[Server] index.html NOT found at ${indexPath}`.bgRed);
         res.status(200).send(`
-            <div style="font-family: sans-serif; padding: 20px; text-align: center;">
-                <h1 style="color: #2563eb;">Clinic-Desk API is running</h1>
-                <p>The frontend build folder was not found.</p>
-                <p>Expected location: <code>${buildPath}</code></p>
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                <p style="color: #666;">If you just deployed, please check the Render build logs to ensure <code>npm run build</code> finished successfully.</p>
+            <div style="font-family:sans-serif;text-align:center;padding:50px;">
+                <h1>Clinic-Desk API is running</h1>
+                <p>Website build files not found. Check Render build logs.</p>
             </div>
         `);
     }
 });
 
-// Global Error Handler
 app.use(errorHandler);
 
-// Start Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
 });
