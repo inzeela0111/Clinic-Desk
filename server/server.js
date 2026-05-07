@@ -90,9 +90,16 @@ if (process.env.NODE_ENV === "production") {
     app.use(express.static(buildPath));
 
     app.get(/.*/, (req, res, next) => {
+        // Skip for API routes
         if (req.path.startsWith('/api')) {
             return next();
         }
+        
+        // If it looks like a static file (has an extension) but wasn't found by express.static
+        if (path.extname(req.path)) {
+            return res.status(404).send(`Asset not found: ${req.path}`);
+        }
+
         res.sendFile(path.join(buildPath, 'index.html'));
     });
 } else {
@@ -113,4 +120,12 @@ app.use(errorHandler);
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue);
+    console.log(`🔍 Checking build path: ${buildPath}`.yellow);
+    import('fs').then(fs => {
+        if (fs.default.existsSync(path.join(buildPath, 'index.html'))) {
+            console.log("✅ index.html found in build directory.".green);
+        } else {
+            console.log("❌ index.html NOT found in build directory! This will cause a white screen.".red);
+        }
+    });
 });
