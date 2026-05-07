@@ -93,7 +93,4 @@ const runSlotAutomation = async () => {
 // Har raat 12 baje chalega
 cron.schedule('0 0 * * *', runSlotAutomation);
 
-// Start automation immediately when server starts to ensure slots are present
-runSlotAutomation();
-
 export default runSlotAutomation;

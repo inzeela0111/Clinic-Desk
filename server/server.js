@@ -16,7 +16,7 @@ import appointmentRoutes from "./routes/appointmentRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
-import "./cron/slotCron.js";
+import runSlotAutomation from "./cron/slotCron.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +30,10 @@ const PORT = process.env.PORT || 5000
 const app = express()
 
 //DB connecion
-connectDB()
+connectDB().then(() => {
+    // Start automation immediately after DB is connected to ensure slots are present
+    runSlotAutomation();
+});
 
 // CORS
 const allowedOrigins = [
@@ -110,5 +113,4 @@ app.use(errorHandler)
 
 app.listen(PORT ,() => {
     console.log(`SERVER IS RUNNING AT PORT : ${PORT}`.bgBlue)
-    console.log(`Static files path: ${buildPath}`.yellow)
 })
