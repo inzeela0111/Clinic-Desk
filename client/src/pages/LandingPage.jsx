@@ -63,7 +63,7 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section className="max-w-7xl mx-auto px-6 py-20 md:py-28 flex flex-col md:flex-row items-center gap-14">
+      <section className="max-w-7xl mx-auto px-6 pt-8 pb-20 md:pt-16 md:pb-28 flex flex-col md:flex-row items-center gap-14">
         <motion.div className="flex-1 max-w-xl" initial="hidden" animate="show" variants={stagger}>
           <motion.span variants={fade} className="inline-block bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-6">Smart Healthcare Solutions</motion.span>
           <motion.h1 variants={fade} className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-slate-900">
