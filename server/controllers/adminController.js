@@ -157,5 +157,66 @@ const getRevenueStats = async (req, res) => {
   }
 };
 
-const adminController = { getDashboardStats, getTodaySchedule, getRevenueStats };
+// @desc    Sabh patients ki list
+// @route   GET /api/admin/patients
+// @access  Admin
+const getAllPatients = async (req, res) => {
+  try {
+    const patients = await User.find({ isAdmin: false })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    // Har patient ke liye appointment count aur last appointment calculate karein
+    const patientsWithStats = await Promise.all(
+      patients.map(async (patient) => {
+        const appointmentCount = await Appointment.countDocuments({ userId: patient._id });
+        const lastAppointment = await Appointment.findOne({ userId: patient._id })
+          .sort({ appointmentDate: -1, time: -1 })
+          .populate("doctorId", "name");
+
+        return {
+          ...patient._doc,
+          appointmentCount,
+          lastAppointment: lastAppointment ? {
+            date: lastAppointment.appointmentDate,
+            doctor: lastAppointment.doctorId?.name
+          } : null
+        };
+      })
+    );
+
+    res.status(200).json({ success: true, count: patients.length, data: patientsWithStats });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Patient ki details aur history
+// @route   GET /api/admin/patients/:id
+// @access  Admin
+const getPatientDetails = async (req, res) => {
+  try {
+    const patient = await User.findById(req.params.id).select("-password");
+    if (!patient) {
+      return res.status(404).json({ success: false, message: "Patient nahi mila" });
+    }
+
+    const appointments = await Appointment.find({ userId: req.params.id })
+      .populate("doctorId", "name speciality image")
+      .populate("slotId", "startTime endTime")
+      .sort({ appointmentDate: -1, time: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        profile: patient,
+        appointments
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const adminController = { getDashboardStats, getTodaySchedule, getRevenueStats, getAllPatients, getPatientDetails };
 export default adminController;

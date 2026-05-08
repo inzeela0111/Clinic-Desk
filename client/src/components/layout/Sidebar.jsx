@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
   LayoutDashboard, Stethoscope, Calendar,
-  BarChart2, ShieldCheck, Sparkles, Bell, X, User
+  BarChart2, ShieldCheck, Sparkles, Bell, X, User, Users
 } from 'lucide-react';
 import { useGetAllAppointmentsQuery, useGetMyAppointmentsQuery } from '../../services/appointmentsApi';
 
@@ -122,6 +122,19 @@ const Sidebar = () => {
             >
               <ShieldCheck className="w-4 h-4 flex-shrink-0" />
               <span>Admin Panel</span>
+            </NavLink>
+            <NavLink
+              to="/admin/patients"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all text-sm ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 font-semibold'
+                    : 'text-slate-600 hover:bg-blue-50 hover:text-blue-600'
+                }`
+              }
+            >
+              <Users className="w-4 h-4 flex-shrink-0" />
+              <span>Patients</span>
             </NavLink>
           </>
         )}

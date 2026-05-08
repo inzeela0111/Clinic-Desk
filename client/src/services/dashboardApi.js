@@ -14,6 +14,14 @@ export const dashboardApi = api.injectEndpoints({
       query: () => '/admin/revenue',
       providesTags: ['Dashboard', 'Billing'],
     }),
+    getPatients: builder.query({
+      query: () => '/admin/patients',
+      providesTags: ['Patients'],
+    }),
+    getPatientDetails: builder.query({
+      query: (id) => `/admin/patients/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Patients', id }],
+    }),
   }),
 });
 
@@ -21,4 +29,6 @@ export const {
   useGetDashboardStatsQuery,
   useGetTodayScheduleQuery,
   useGetRevenueStatsQuery,
+  useGetPatientsQuery,
+  useGetPatientDetailsQuery,
 } = dashboardApi;
