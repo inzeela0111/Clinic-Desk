@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import {
   Users, Search, Calendar, Phone, Mail, Clock,
   ChevronRight, ArrowLeft, Loader2, User as UserIcon,
@@ -175,9 +175,19 @@ const PatientDetailsModal = ({ patientId, onClose }) => {
 
 const PatientsManagement = () => {
   const { user } = useSelector(state => state.auth);
+  const location = useLocation();
   const { data, isLoading } = useGetPatientsQuery();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPatientId, setSelectedPatientId] = useState(null);
+
+  // Auto-select patient from search navigation state
+  useEffect(() => {
+    if (location.state?.selectedPatientId) {
+      setSelectedPatientId(location.state.selectedPatientId);
+      // Clean up state so it doesn't re-open on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   if (!user?.isAdmin) return <Navigate to="/dashboard" replace />;
 

@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="h-16 w-full bg-white border-b border-slate-200 flex items-center justify-between px-8">
+    <header className="hidden lg:flex h-16 w-full bg-white border-b border-slate-200 items-center justify-between px-8">
       <div className="font-medium text-slate-800 text-lg">
         {/* Dynamic page title can be added here */}
       </div>
