@@ -14,6 +14,7 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone must be at least 10 digits'),
+  gender: z.enum(['Male', 'Female', 'Other'], { required_error: 'Please select a gender' }),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
@@ -94,6 +95,19 @@ const RegisterPage = () => {
                 placeholder="9876543210"
               />
               {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+              <select
+                {...register('gender')}
+                className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              {errors.gender && <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>}
             </div>
             
             <div>

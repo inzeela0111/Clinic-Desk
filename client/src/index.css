@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #2563eb;
   --color-background: #f1f5f9;
@@ -8,9 +10,17 @@
 body {
   background-color: var(--color-background);
   color: #1e293b;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Custom Scrollbar for a cleaner look */
+.dark body,
+.dark {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  color-scheme: dark;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -24,4 +34,141 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* =========================================
+   GLOBAL DARK MODE OVERRIDES
+   Auto-applies dark theme to ALL pages
+   ========================================= */
+
+/* White / Light backgrounds */
+.dark .bg-white {
+  background-color: #1e293b !important;
+}
+.dark .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+.dark .bg-slate-50\/50 {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+}
+.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+}
+
+/* Borders */
+.dark .border-slate-100,
+.dark .border-slate-200 {
+  border-color: #334155 !important;
+}
+.dark .border-slate-50 {
+  border-color: #1e293b !important;
+}
+
+/* Text colors */
+.dark .text-slate-800,
+.dark .text-slate-900 {
+  color: #f1f5f9 !important;
+}
+.dark .text-slate-700 {
+  color: #cbd5e1 !important;
+}
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+/* Shadows */
+.dark .shadow-xl,
+.dark .shadow-lg,
+.dark .shadow-md,
+.dark .shadow-sm {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+.dark .shadow-slate-200\/50 {
+  --tw-shadow-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Inputs & Form elements */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #475569;
+}
+
+/* Recharts tooltip */
+.dark .recharts-default-tooltip {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Overlay backgrounds */
+.dark .bg-white\/95 {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+}
+.dark .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Light colored tinted backgrounds */
+.dark .bg-blue-50 {
+  background-color: rgba(29, 78, 216, 0.15) !important;
+}
+.dark .bg-purple-50,
+.dark .bg-violet-50 {
+  background-color: rgba(109, 40, 217, 0.15) !important;
+}
+.dark .bg-emerald-50,
+.dark .bg-green-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+.dark .bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+.dark .bg-amber-50,
+.dark .bg-yellow-50 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+}
+.dark .bg-indigo-50 {
+  background-color: rgba(79, 70, 229, 0.15) !important;
+}
+.dark .bg-blue-100 {
+  background-color: rgba(29, 78, 216, 0.2) !important;
+}
+.dark .bg-violet-100 {
+  background-color: rgba(109, 40, 217, 0.2) !important;
+}
+
+/* Hover states */
+.dark .hover\:bg-slate-50:hover {
+  background-color: #1e293b !important;
+}
+.dark .hover\:bg-blue-50:hover {
+  background-color: rgba(29, 78, 216, 0.2) !important;
+}
+.dark .hover\:bg-blue-100:hover {
+  background-color: rgba(29, 78, 216, 0.25) !important;
+}
+.dark .hover\:bg-violet-50:hover {
+  background-color: rgba(109, 40, 217, 0.2) !important;
 }

@@ -33,12 +33,17 @@ export const doctorsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Doctors'],
     }),
+    getPublicStats: builder.query({
+      query: () => '/doctors/public-stats',
+      providesTags: ['Doctors'],
+    }),
   }),
 });
 
 export const {
   useGetDoctorsQuery,
   useGetDoctorQuery,
+  useGetPublicStatsQuery,
   useAddDoctorMutation,
   useUpdateDoctorMutation,
   useDeleteDoctorMutation,

@@ -8,24 +8,40 @@ import Slot from "../models/slotModel.js";
 // @access  Admin
 const getDashboardStats = async (req, res) => {
   try {
+    const isPatient = !req.user.isAdmin;
+    const patientFilter = isPatient ? { userId: req.user._id } : {};
+    
+    console.log("DEBUG: Dashboard stats request", { 
+      userName: req.user.name, 
+      isAdmin: req.user.isAdmin, 
+      isPatient, 
+      patientFilter 
+    });
+
     const [totalDoctors, totalUsers, totalAppointments, totalSlots] = await Promise.all([
       Doctor.countDocuments({ isActive: true }),
-      User.countDocuments({ isAdmin: false, isActive: true }),
-      Appointment.countDocuments(),
-      Slot.countDocuments(),
+      isPatient ? 0 : User.countDocuments({ isAdmin: false, isActive: true }),
+      Appointment.countDocuments(patientFilter),
+      isPatient ? 0 : Slot.countDocuments(),
     ]);
 
     const statusBreakdown = await Appointment.aggregate([
+      { $match: patientFilter },
       { $group: { _id: "$status", count: { $sum: 1 } } },
       { $project: { _id: 0, status: "$_id", count: 1 } },
     ]);
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split("T")[0];
+    const range = req.query.range || "week";
+    const startDate = new Date();
+    if (range === "month") {
+      startDate.setDate(startDate.getDate() - 30);
+    } else {
+      startDate.setDate(startDate.getDate() - 7);
+    }
+    const startDateStr = startDate.toISOString().split("T")[0];
 
     const dailyStats = await Appointment.aggregate([
-      { $match: { appointmentDate: { $gte: sevenDaysAgoStr } } },
+      { $match: { ...patientFilter, appointmentDate: { $gte: startDateStr } } },
       {
         $group: {
           _id:       "$appointmentDate",
@@ -77,6 +93,7 @@ const getDashboardStats = async (req, res) => {
     const today = new Date().toISOString().split("T")[0];
 
     const todayAppointments = await Appointment.find({
+      ...patientFilter,
       appointmentDate: today,
       status: { $ne: "cancelled" },
     })
@@ -106,8 +123,10 @@ const getDashboardStats = async (req, res) => {
 const getTodaySchedule = async (req, res) => {
   try {
     const today = new Date().toISOString().split("T")[0];
+    const patientFilter = !req.user.isAdmin ? { userId: req.user._id } : {};
 
     const appointments = await Appointment.find({
+      ...patientFilter,
       appointmentDate: today,
       status: { $ne: "cancelled" },
     })

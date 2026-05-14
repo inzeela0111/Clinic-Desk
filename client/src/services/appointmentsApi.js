@@ -33,6 +33,14 @@ export const appointmentsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Appointments'],
     }),
+    submitFeedback: builder.mutation({
+      query: ({ id, rating, feedback }) => ({
+        url: `/appointments/${id}/feedback`,
+        method: 'PATCH',
+        body: { rating, feedback },
+      }),
+      invalidatesTags: ['Appointments'],
+    }),
   }),
 });
 
@@ -42,4 +50,5 @@ export const {
   useBookAppointmentMutation,
   useUpdateAppointmentStatusMutation,
   useCancelAppointmentMutation,
+  useSubmitFeedbackMutation,
 } = appointmentsApi;

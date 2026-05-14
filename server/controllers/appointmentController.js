@@ -164,9 +164,11 @@ const getAllAppointments = async (req, res) => {
 const updateAppointmentStatus = async (req, res) => {
   try {
     const { status } = req.body;
+    console.log("Status update request received:", status);
 
-    if (!["pending", "confirmed", "cancelled"].includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status. Sirf ye allowed: pending | confirmed | cancelled" });
+    const allowedStatuses = ["pending", "confirmed", "cancelled", "completed"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: `Invalid status. Sirf ye allowed: ${allowedStatuses.join(' | ')}` });
     }
 
     const appointment = await Appointment.findById(req.params.id);
@@ -201,6 +203,45 @@ const updateAppointmentStatus = async (req, res) => {
   }
 };
 
+// @desc    Appointment feedback submit karo
+// @route   PATCH /api/appointments/:id/feedback
+// @access  User
+const submitFeedback = async (req, res) => {
+  try {
+    const { rating, feedback } = req.body;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: "Rating 1 to 5 ke beech honi chahiye" });
+    }
+
+    const appointment = await Appointment.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: "Appointment nahi mili" });
+    }
+
+    if (appointment.status !== "completed") {
+      return res.status(400).json({ success: false, message: "Sirf completed appointments par hi feedback diya ja sakta hai" });
+    }
+
+    if (appointment.rating) {
+      return res.status(400).json({ success: false, message: "Aap pehle hi feedback de chuke hain" });
+    }
+
+    appointment.rating = rating;
+    appointment.feedback = feedback || "";
+    await appointment.save();
+
+    res.status(200).json({ success: true, message: "Feedback submit ho gaya. Shukriya!", data: appointment });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const appointmentController = {
   bookAppointment,
   getMyAppointments,
@@ -208,5 +249,6 @@ const appointmentController = {
   cancelMyAppointment,
   getAllAppointments,
   updateAppointmentStatus,
+  submitFeedback,
 };
 export default appointmentController;

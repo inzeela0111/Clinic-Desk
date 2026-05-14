@@ -27,21 +27,23 @@ const appointmentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
+      enum: ["pending", "confirmed", "cancelled", "completed"],
       default: "pending",
     },
     symptoms: {
       type: String,
       default: "",
     },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "failed"],
-      default: "pending",
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
     },
-    razorpayOrderId: {
+    feedback: {
       type: String,
+      default: "",
     },
+   
   },
   {
     timestamps: true,

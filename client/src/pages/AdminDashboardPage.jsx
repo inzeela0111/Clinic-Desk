@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   UserPlus, Stethoscope, CalendarCheck, Trash2, Plus,
-  CheckCircle, XCircle, Clock, ChevronDown, Loader2, Pencil
+  CheckCircle, XCircle, Clock, ChevronDown, Loader2, Pencil, ShieldCheck
 } from 'lucide-react';
 import {
   useGetDoctorsQuery, useAddDoctorMutation,
@@ -21,6 +21,7 @@ const Badge = ({ status }) => {
     pending: 'bg-amber-100 text-amber-700',
     confirmed: 'bg-emerald-100 text-emerald-700',
     cancelled: 'bg-red-100 text-red-600',
+    completed: 'bg-blue-100 text-blue-700',
   };
   return (
     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cfg[status] || 'bg-slate-100 text-slate-600'}`}>
@@ -30,13 +31,17 @@ const Badge = ({ status }) => {
 };
 
 // ─── TAB 1: Add / Manage Doctors ───────────────────────────
-const DoctorsPanel = () => {
+const DoctorsPanel = ({ autoOpen }) => {
   const { data, isLoading } = useGetDoctorsQuery();
   const [addDoctor, { isLoading: adding }] = useAddDoctorMutation();
   const [deleteDoctor] = useDeleteDoctorMutation();
   const [updateDoctor, { isLoading: updating }] = useUpdateDoctorMutation();
   const [form, setForm] = useState({ name: '', speciality: 'General Physician', experience: '', fees: '', bio: '', image: '' });
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    if (autoOpen) setShowForm(true);
+  }, [autoOpen]);
   const [editingId, setEditingId] = useState(null);
 
   const doctors = Array.isArray(data) ? data : data?.data || [];
@@ -76,6 +81,15 @@ const DoctorsPanel = () => {
       toast.success('Doctor removed');
     } catch (err) {
       toast.error(err?.data?.message || 'Cannot delete');
+    }
+  };
+
+  const handleToggleAvailability = async (doc) => {
+    try {
+      await updateDoctor({ id: doc._id, isAvailable: !doc.isAvailable }).unwrap();
+      toast.success(`Doctor marked as ${!doc.isAvailable ? 'Available' : 'Unavailable'}`);
+    } catch (err) {
+      toast.error(err?.data?.message || 'Failed to update availability');
     }
   };
 
@@ -151,29 +165,58 @@ const DoctorsPanel = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {doctors.map(doc => (
-            <div key={doc._id} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 overflow-hidden">
-                  {doc.image ? <img src={doc.image} alt={doc.name} className="w-full h-full object-cover" /> : doc.name?.charAt(0)}
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => handleEdit(doc)} className="text-slate-300 hover:text-blue-500 transition-colors">
+            <div key={doc._id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group relative">
+              {/* Top Gradient Strip */}
+              <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+              
+              <div className="p-5 flex flex-col items-center">
+                {/* Actions (Edit/Delete) */}
+                <div className="absolute top-4 right-4 flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <button 
+                    onClick={() => handleEdit(doc)} 
+                    className="p-2 bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white rounded-full shadow-sm transition-all"
+                    title="Edit Doctor"
+                  >
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(doc._id)} className="text-slate-300 hover:text-red-500 transition-colors">
+                  <button 
+                    onClick={() => handleDelete(doc._id)} 
+                    className="p-2 bg-red-100 text-red-600 hover:bg-red-500 hover:text-white rounded-full shadow-sm transition-all"
+                    title="Delete Doctor"
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
-              <div className="mt-3">
-                <p className="font-semibold text-slate-800">Dr. {doc.name}</p>
-                <p className="text-xs text-blue-600 font-medium mt-0.5">{doc.speciality}</p>
-                <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
-                  <span>{doc.experience} yrs exp</span>
-                  <span className="font-semibold text-slate-700">₹{doc.fees}</span>
-                  <span className={`px-2 py-0.5 rounded-full font-medium ${doc.isAvailable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600'}`}>
-                    {doc.isAvailable ? 'Available' : 'Unavailable'}
-                  </span>
+
+                <div className="w-20 h-20 rounded-full border-4 border-blue-50 shadow-md flex items-center justify-center text-white font-bold text-2xl flex-shrink-0 overflow-hidden mb-3 bg-gradient-to-br from-blue-500 to-indigo-600 mt-2">
+                  {doc.image ? <img src={doc.image} alt={doc.name} className="w-full h-full object-cover" /> : doc.name?.charAt(0)}
+                </div>
+                
+                <p className="font-extrabold text-lg text-slate-800 text-center">Dr. {doc.name}</p>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full mt-1 border border-blue-100">
+                  {doc.speciality}
+                </span>
+
+                <div className="w-full grid grid-cols-2 gap-2 mt-5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <div className="text-center">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase">Experience</p>
+                    <p className="text-sm font-extrabold text-slate-700">{doc.experience} Yrs</p>
+                  </div>
+                  <div className="text-center border-l border-slate-200">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase">Fees</p>
+                    <p className="text-sm font-extrabold text-blue-600">₹{doc.fees}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4 w-full flex justify-center">
+                  <button 
+                    onClick={() => handleToggleAvailability(doc)}
+                    disabled={updating}
+                    className={`px-4 py-1.5 rounded-lg text-xs font-bold border transition-all hover:shadow-md active:scale-95 disabled:opacity-50 ${doc.isAvailable ? 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100' : 'bg-red-50 text-red-600 border-red-100 hover:bg-red-100'}`}
+                  >
+                    <div className={`inline-block w-2 h-2 rounded-full mr-1.5 ${doc.isAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`}></div>
+                    {doc.isAvailable ? 'Currently Available' : 'Not Available'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -363,7 +406,7 @@ const AppointmentsPanel = () => {
       <h2 className="text-lg font-bold text-slate-800">Appointments</h2>
 
       <div className="flex flex-wrap gap-3 items-center">
-        {['', 'pending', 'confirmed', 'cancelled'].map(s => (
+        {['', 'pending', 'confirmed', 'cancelled', 'completed'].map(s => (
           <button key={s}
             onClick={() => setStatusFilter(s)}
             className={`text-sm font-medium px-4 py-1.5 rounded-full border transition-colors ${statusFilter === s
@@ -408,10 +451,16 @@ const AppointmentsPanel = () => {
                 </div>
                 {appt.status !== 'cancelled' && (
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {appt.status !== 'confirmed' && (
+                    {appt.status !== 'confirmed' && appt.status !== 'completed' && (
                       <button onClick={() => handleStatus(appt._id, 'confirmed')}
                         className="flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
                         <CheckCircle className="w-3.5 h-3.5" /> Confirm
+                      </button>
+                    )}
+                    {appt.status === 'confirmed' && (
+                      <button onClick={() => handleStatus(appt._id, 'completed')}
+                        className="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                        <CheckCircle className="w-3.5 h-3.5" /> Complete
                       </button>
                     )}
                     <button onClick={() => handleStatus(appt._id, 'cancelled')}
@@ -439,18 +488,30 @@ const TABS = [
 const AdminDashboardPage = () => {
   const { user } = useSelector(state => state.auth);
   const [activeTab, setActiveTab] = useState('doctors');
+  const location = useLocation();
 
   if (!user?.isAdmin) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Admin Dashboard</h1>
-          <p className="text-slate-500 text-sm mt-1">Manage doctors, slots and appointments</p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-48 h-48 rounded-full bg-white opacity-10 blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-blue-300 opacity-20 blur-xl"></div>
+        
+        <div className="relative z-10">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+              <ShieldCheck className="w-7 h-7 text-white" />
+            </div>
+            Admin Dashboard
+          </h1>
+          <p className="text-blue-100 mt-2 text-sm font-medium max-w-md">
+            Manage doctors, slots and appointments
+          </p>
         </div>
-        <div className="text-xs bg-blue-50 border border-blue-200 text-blue-700 font-semibold px-3 py-1.5 rounded-full self-start sm:self-auto">
+
+        <div className="relative z-10 text-sm bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold px-4 py-2 rounded-full self-start sm:self-auto shadow-sm">
           👤 {user?.name}
         </div>
       </div>
@@ -474,7 +535,7 @@ const AdminDashboardPage = () => {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'doctors' && <DoctorsPanel />}
+        {activeTab === 'doctors' && <DoctorsPanel autoOpen={location.state?.openAddDoctor} />}
         {activeTab === 'slots' && <SlotsPanel />}
         {activeTab === 'appointments' && <AppointmentsPanel />}
       </div>

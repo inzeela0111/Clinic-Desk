@@ -2,7 +2,8 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   Brain, Sparkles, Stethoscope, Calendar, Clock,
-  CheckCircle, ArrowRight, Loader2, RotateCcw, User, X
+  CheckCircle, ArrowRight, Loader2, RotateCcw, User, X,
+  ShieldCheck, Activity, Lock, Zap, Star
 } from 'lucide-react';
 import { useGetSuggestedSpecialityMutation } from '../services/aiApi';
 import { useGetDoctorsQuery } from '../services/doctorsApi';
@@ -10,28 +11,25 @@ import { useGetDoctorSlotsQuery } from '../services/slotsApi';
 import { useBookAppointmentMutation } from '../services/appointmentsApi';
 
 // ─── Step indicator ─────────────────────────────────────────
-const Step = ({ num, label, active, done }) => (
-  <div className="flex items-center gap-2">
-    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-      done ? 'bg-emerald-500 text-white' :
-      active ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' :
-      'bg-slate-100 text-slate-400'
+const Step = ({ num, title, desc, active, done }) => (
+  <div className={`flex items-start gap-3 flex-1 pb-4 border-b-2 transition-all ${
+    active ? 'border-blue-600' : done ? 'border-slate-200' : 'border-slate-100'
+  }`}>
+    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-all ${
+      active ? 'bg-blue-600 text-white' : done ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-400'
     }`}>
       {done ? <CheckCircle className="w-4 h-4" /> : num}
     </div>
-    <span className={`text-sm font-medium hidden sm:block ${active ? 'text-blue-600' : done ? 'text-emerald-600' : 'text-slate-400'}`}>
-      {label}
-    </span>
+    <div className="hidden sm:block">
+      <p className={`text-sm font-bold ${active || done ? 'text-slate-800' : 'text-slate-400'}`}>{title}</p>
+      <p className="text-xs text-slate-500 mt-0.5">{desc}</p>
+    </div>
   </div>
-);
-
-const StepDivider = ({ done }) => (
-  <div className={`flex-1 h-0.5 mx-2 rounded-full transition-all ${done ? 'bg-emerald-400' : 'bg-slate-200'}`} />
 );
 
 // ─── Main Component ─────────────────────────────────────────
 const AISymptomsPage = () => {
-  const [step, setStep] = useState(1); // 1=symptoms, 2=pick doctor, 3=pick slot, 4=done
+  const [step, setStep] = useState(1);
   const [symptoms, setSymptoms] = useState('');
   const [suggestedSpeciality, setSuggestedSpeciality] = useState('');
   const [aiReason, setAiReason] = useState('');
@@ -60,7 +58,6 @@ const AISymptomsPage = () => {
 
   const availableSlots = (slotsData?.data || []).filter(s => !s.isBooked);
 
-  // ── Step 1: AI Analysis ──────────────────────────────────
   const handleAnalyze = async () => {
     if (!symptoms.trim() || symptoms.trim().length < 10)
       return toast.error('Please describe your symptoms in more detail');
@@ -77,7 +74,6 @@ const AISymptomsPage = () => {
     }
   };
 
-  // ── Step 3: Book ─────────────────────────────────────────
   const handleBook = async () => {
     if (!selectedSlot) return toast.error('Please select a slot');
     try {
@@ -105,63 +101,140 @@ const AISymptomsPage = () => {
     'Orthopedic': '🦴', 'Neurologist': '🧠', 'ENT': '👂',
   };
 
+  const COMMON_SYMPTOMS = [
+    { emoji: '🤕', text: 'Headache & dizziness' },
+    { emoji: '🫁', text: 'Chest pain & breathlessness' },
+    { emoji: '🦠', text: 'Skin rash & itching' },
+    { emoji: '🦴', text: 'Joint pain & swelling' },
+    { emoji: '👂', text: 'Ear pain & hearing loss' },
+    { emoji: '🤒', text: 'Fever & cough' },
+    { emoji: '🤢', text: 'Nausea & vomiting' },
+  ];
+
   return (
-    <div className="space-y-6 max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="text-center">
-        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs font-bold px-4 py-1.5 rounded-full mb-3">
-          <Sparkles className="w-3.5 h-3.5" /> AI-Powered
+    <div className="max-w-5xl mx-auto space-y-8 pb-10">
+      
+      {/* Hero Banner */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-4">
+        <div className="flex-1 space-y-4">
+          <div className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1 rounded-full border border-blue-100">
+            <Sparkles className="w-3.5 h-3.5" /> AI-Powered
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-800 tracking-tight">
+            Symptom Checker & <span className="text-blue-600">Smart Booking</span>
+          </h1>
+          <p className="text-slate-500 text-base max-w-md">
+            Describe your symptoms and our AI will suggest the right doctor for you.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold text-slate-800">Symptom Checker & Smart Booking</h1>
-        <p className="text-slate-500 text-sm mt-1">Describe your symptoms — our AI will suggest the right doctor</p>
+        <div className="hidden md:block w-72 h-48 bg-gradient-to-tr from-blue-50 to-indigo-50 rounded-3xl relative overflow-hidden flex-shrink-0 border border-blue-100">
+          {/* Abstract illustration placeholder */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-32 h-40 bg-white rounded-xl shadow-sm border border-blue-100 flex flex-col items-center justify-center gap-3">
+               <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                 <span className="text-blue-600 font-bold text-xl">+</span>
+               </div>
+               <div className="w-16 h-2 bg-slate-100 rounded-full"></div>
+               <div className="w-12 h-2 bg-slate-100 rounded-full"></div>
+               <div className="mt-2 w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-bold text-xs">AI</div>
+            </div>
+            <Activity className="absolute right-8 top-10 w-8 h-8 text-red-400 opacity-50" />
+            <div className="absolute left-6 bottom-12 w-4 h-4 rounded-full bg-indigo-300 opacity-50"></div>
+            <div className="absolute right-12 bottom-8 w-6 h-6 rounded-full bg-blue-300 opacity-40"></div>
+          </div>
+        </div>
       </div>
 
       {/* Step Bar */}
-      <div className="flex items-center bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-sm">
-        <Step num="1" label="Symptoms" active={step === 1} done={step > 1} />
-        <StepDivider done={step > 1} />
-        <Step num="2" label="Pick Doctor" active={step === 2} done={step > 2} />
-        <StepDivider done={step > 2} />
-        <Step num="3" label="Book Slot" active={step === 3} done={step > 3} />
-        <StepDivider done={step > 3} />
-        <Step num="4" label="Confirmed" active={step === 4} done={false} />
+      <div className="bg-white border border-slate-200 rounded-3xl px-8 py-6 shadow-sm flex gap-4 overflow-x-auto custom-scrollbar">
+        <Step num="1" title="Symptoms" desc="Describe your health issue" active={step === 1} done={step > 1} />
+        <Step num="2" title="Pick Doctor" desc="AI suggests best match" active={step === 2} done={step > 2} />
+        <Step num="3" title="Book Slot" desc="Choose date & time" active={step === 3} done={step > 3} />
+        <Step num="4" title="Confirmed" desc="You're all set!" active={step === 4} done={false} />
       </div>
 
       {/* ── STEP 1: Symptoms ── */}
       {step === 1 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Brain className="w-5 h-5 text-blue-600" />
+        <div className="space-y-6">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+            
+            {/* Title & Badge */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-md shadow-blue-200">
+                  <Stethoscope className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Describe Your Symptoms</h2>
+                  <p className="text-sm text-slate-500">Be as specific as possible for best results</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-100 text-xs font-semibold">
+                <ShieldCheck className="w-4 h-4" /> Your data is secure
+              </div>
             </div>
-            <div>
-              <h2 className="font-semibold text-slate-800">Describe Your Symptoms</h2>
-              <p className="text-xs text-slate-500">Be as specific as possible for best results</p>
+
+            {/* Textarea */}
+            <div className="relative mb-8 ">
+              <textarea
+                rows={4}
+                value={symptoms}
+                maxLength={500}
+                onChange={e => setSymptoms(e.target.value)}
+                placeholder="Example: I have been experiencing severe headaches for the past 3 days, with some dizziness and blurry vision when I stand up..."
+                className="w-full border border-slate-200 rounded-2xl px-5 py-4 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 resize-none transition-all"
+              />
+              <div className="absolute bottom-3 right-4 text-[10px] font-medium text-slate-400">
+                {symptoms.length}/500
+              </div>
+            </div>
+
+            {/* Quick Symptoms */}
+            <div className="mb-8">
+              <p className="text-xs font-bold text-slate-800 mb-3">Or choose common symptoms</p>
+              <div className="flex flex-wrap gap-2.5">
+                {COMMON_SYMPTOMS.map((item, idx) => (
+                  <button key={idx} onClick={() => setSymptoms(s => s ? `${s}, ${item.text}` : item.text)}
+                    className="flex items-center gap-2 text-xs font-medium border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-full transition-colors">
+                    <span className="text-base">{item.emoji}</span> {item.text}
+                  </button>
+                ))}
+                <button className="flex items-center gap-1 text-xs font-medium border border-dashed border-slate-300 bg-slate-50 text-slate-500 px-4 py-2 rounded-full hover:bg-slate-100 hover:text-slate-700 transition-colors">
+                  + More symptoms
+                </button>
+              </div>
+            </div>
+
+            {/* Analyze Button */}
+            <button onClick={handleAnalyze} disabled={aiLoading || symptoms.trim().length < 10}
+              className="w-full flex items-center justify-between bg-gradient-to-r from-blue-700 to-violet-700 hover:from-blue-800 hover:to-violet-800 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 disabled:opacity-60 shadow-lg shadow-blue-500/20 group">
+              <div className="flex items-center gap-2 mx-auto">
+                {aiLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                <span>{aiLoading ? 'Analyzing...' : 'Analyze Symptoms with AI'}</span>
+              </div>
+              {!aiLoading && <ArrowRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all absolute right-8" />}
+            </button>
+          </div>
+
+          {/* Bottom Features */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-start gap-3">
+              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Brain className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-slate-800">AI-Powered Analysis</p><p className="text-[10px] text-slate-500 leading-tight mt-0.5">Advanced AI analyzes your symptoms instantly</p></div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-start gap-3">
+              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><Lock className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-slate-800">Secure & Private</p><p className="text-[10px] text-slate-500 leading-tight mt-0.5">Your health data is 100% encrypted & secure</p></div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-start gap-3">
+              <div className="p-2 bg-orange-50 text-orange-600 rounded-lg"><Zap className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-slate-800">Quick & Easy</p><p className="text-[10px] text-slate-500 leading-tight mt-0.5">Get doctor suggestions in just a few seconds</p></div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-start gap-3">
+              <div className="p-2 bg-pink-50 text-pink-600 rounded-lg"><Star className="w-5 h-5" /></div>
+              <div><p className="text-xs font-bold text-slate-800">Smart Matching</p><p className="text-[10px] text-slate-500 leading-tight mt-0.5">AI matches you with the most relevant specialists</p></div>
             </div>
           </div>
-          <textarea
-            rows={5}
-            value={symptoms}
-            onChange={e => setSymptoms(e.target.value)}
-            placeholder="Example: I have been experiencing severe headaches for the past 3 days, with some dizziness and blurry vision when I stand up..."
-            className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none transition-all"
-          />
-          <div className="flex flex-wrap gap-2">
-            {['Headache & dizziness','Chest pain & shortness of breath','Skin rash & itching','Joint pain & swelling','Ear pain & hearing loss','Fever & cough'].map(ex => (
-              <button key={ex} onClick={() => setSymptoms(ex)}
-                className="text-xs border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 text-slate-600 px-3 py-1.5 rounded-full transition-all">
-                {ex}
-              </button>
-            ))}
-          </div>
-          <button onClick={handleAnalyze} disabled={aiLoading || symptoms.trim().length < 10}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-semibold py-3 rounded-xl transition-all disabled:opacity-50 shadow-lg shadow-blue-200">
-            {aiLoading ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing with AI...</>
-            ) : (
-              <><Sparkles className="w-5 h-5" /> Analyze Symptoms</>
-            )}
-          </button>
         </div>
       )}
 

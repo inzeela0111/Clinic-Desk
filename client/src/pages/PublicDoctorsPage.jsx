@@ -224,7 +224,7 @@ const PublicDoctorsPage = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-500">
           <div className="flex flex-col items-center md:items-start space-y-2">
             <span className="font-bold text-gray-800 text-base">Contact Us</span>
-            <span>📍 Address: ClinicDesk Medical Center, New Delhi</span>
+            <span>📍 Address: ClinicDesk Medical Center, Indore</span>
             <span>📞 Phone: +91 98765 43210</span>
             <span>📧 Email: support@clinicdesk.com</span>
             <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="text-green-600 font-medium hover:text-green-700 transition">

@@ -3,10 +3,12 @@ import { Outlet, Link, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
-import { Stethoscope, Bell, Menu, Search as SearchIcon, User, UserCheck, ArrowRight, Loader2 } from 'lucide-react';
+import FeedbackModal from '../FeedbackModal';
+import { Stethoscope, Bell, Menu, Search as SearchIcon, User, UserCheck, ArrowRight, Loader2, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { useGetDoctorsQuery } from '../../services/doctorsApi';
 import { useGetPatientsQuery } from '../../services/dashboardApi';
+import { useGetMyAppointmentsQuery } from '../../services/appointmentsApi';
 
 const Layout = () => {
   const { user } = useSelector(state => state.auth);
@@ -14,7 +16,43 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [pendingFeedback, setPendingFeedback] = useState(null);
   const searchRef = useRef(null);
+
+  // Fetch appointments to check for feedback
+  const { data: myApps } = useGetMyAppointmentsQuery({}, { 
+    skip: !user || user?.isAdmin,
+    pollingInterval: 30000 // Check every 30s
+  });
+
+  useEffect(() => {
+    if (myApps?.data && !user?.isAdmin) {
+      const completedUnrated = myApps.data.find(app => app.status === 'completed' && !app.rating);
+      
+      if (completedUnrated) {
+        const appointmentId = completedUnrated._id;
+        const storageKey = `feedback_timer_${appointmentId}`;
+        const scheduledTime = localStorage.getItem(storageKey);
+
+        if (!scheduledTime) {
+          // Schedule for 10 seconds from now (Reduced for testing as per user feedback)
+          const targetTime = Date.now() + 10 * 1000;
+          localStorage.setItem(storageKey, targetTime.toString());
+          console.log(`Feedback scheduled for appointment ${appointmentId} in 10 seconds`);
+        } else {
+          const now = Date.now();
+          if (now >= parseInt(scheduledTime)) {
+            // It's time! But wait for user activity or just show if tab is active
+            if (document.visibilityState === 'visible') {
+              setPendingFeedback(completedUnrated);
+              setShowFeedbackModal(true);
+            }
+          }
+        }
+      }
+    }
+  }, [myApps, user]);
 
   // Fetch data for search
   const { data: doctorsData } = useGetDoctorsQuery();
@@ -34,20 +72,20 @@ const Layout = () => {
   const hasResults = filteredDoctors.length > 0 || filteredPatients.length > 0;
 
   return (
-    <div className="flex bg-slate-50 min-h-screen relative overflow-hidden">
+    <div className="flex bg-slate-50 dark:bg-slate-950 min-h-screen relative overflow-hidden">
       {/* Mobile Top Header (Classic with Logo) */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 z-40 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 z-40 flex items-center justify-between px-4">
         {/* Logo & Name - Left */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
             <Stethoscope className="w-4 h-4 text-white" />
           </div>
-          <span className="text-lg font-black text-blue-600 tracking-tight">ClinicDesk</span>
+          <span className="text-lg font-black text-blue-600 dark:text-blue-400 tracking-tight">ClinicDesk</span>
         </div>
 
         <div className="flex items-center gap-1">
           {/* Notification - Top */}
-          <Link to="/notifications" className="relative p-2 text-slate-400 hover:text-blue-600 transition-colors">
+          <Link to="/notifications" className="relative p-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 transition-colors">
             <Bell className="w-5 h-5" />
             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
           </Link>
@@ -55,7 +93,7 @@ const Layout = () => {
           {/* Hamburger - Right */}
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 hover:bg-slate-50 rounded-lg text-slate-600 flex-shrink-0"
+            className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 flex-shrink-0"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -79,25 +117,25 @@ const Layout = () => {
 
       {/* Global Search Overlay */}
       {isSearchOpen && (
-        <div className="lg:hidden fixed inset-0 bg-white/95 backdrop-blur-md z-[70] animate-in fade-in duration-300 flex flex-col">
-            <div className="h-16 flex items-center gap-4 px-6 border-b border-slate-100">
+        <div className="lg:hidden fixed inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-[45] animate-in fade-in duration-300 flex flex-col">
+            <div className="h-16 flex items-center gap-4 px-6 border-b border-slate-100 dark:border-slate-700">
                 <SearchIcon className="w-5 h-5 text-blue-600" />
                 <input 
                     autoFocus
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search doctors, patients..."
-                    className="flex-1 bg-transparent border-none outline-none text-lg font-bold text-slate-800 placeholder:text-slate-300"
+                    placeholder={user?.isAdmin ? "Search doctors, patients..." : "Search doctors..."}
+                    className="flex-1 bg-transparent border-none outline-none text-lg font-bold text-slate-800 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600"
                 />
                 <button 
                     onClick={() => {
                         setIsSearchOpen(false);
                         setSearchQuery('');
                     }}
-                    className="text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-4 py-2 rounded-xl"
+                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all"
                 >
-                    Close
+                    <X className="w-6 h-6" />
                 </button>
             </div>
 
@@ -173,8 +211,16 @@ const Layout = () => {
       {/* Mobile Overlay for Sidebar */}
       {isSidebarOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity"
+          className="lg:hidden fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-40 transition-opacity"
           onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && pendingFeedback && (
+        <FeedbackModal 
+          appointment={pendingFeedback} 
+          onClose={() => setShowFeedbackModal(false)} 
         />
       )}
     </div>

@@ -12,6 +12,7 @@ router.post("/",            protect.forUser,  appointmentController.bookAppointm
 router.get("/mine",         protect.forUser,  appointmentController.getMyAppointments);
 router.get("/:id",          protect.forUser,  appointmentController.getAppointment);
 router.patch("/:id/cancel", protect.forUser,  appointmentController.cancelMyAppointment);
+router.patch("/:id/feedback", protect.forUser, appointmentController.submitFeedback);
 
 // Admin routes
 router.get("/",             protect.forAdmin, appointmentController.getAllAppointments);

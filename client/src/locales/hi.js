@@ -1,0 +1,181 @@
+const hi = {
+  // Sidebar Navigation
+  dashboard: 'डैशबोर्ड',
+  smartBooking: 'स्मार्ट बुकिंग',
+  appointments: 'अपॉइंटमेंट',
+  doctors: 'डॉक्टर',
+  reports: 'रिपोर्ट',
+  notifications: 'सूचनाएं',
+  admin: 'एडमिन',
+  adminPanel: 'एडमिन पैनल',
+  patients: 'मरीज़',
+  logout: 'लॉगआउट',
+  settings: 'सेटिंग्स',
+
+  // Settings Tabs
+  general: 'सामान्य',
+  preferences: 'पसंद',
+  account: 'अकाउंट',
+  security: 'सुरक्षा',
+  billing: 'बिलिंग',
+
+  // Dashboard
+  welcomeBack: 'वापसी पर स्वागत है',
+  goodMorning: 'सुप्रभात! आज क्या हो रहा है देखें।',
+  goodAfternoon: 'नमस्कार! आशा है आपका दिन अच्छा बीत रहा होगा।',
+  goodEvening: 'शुभ संध्या! आज की प्रगति देखने का समय है।',
+  goodNight: 'शुभ रात्रि! स्वस्थ रहने के लिए अच्छी नींद ज़रूरी है।',
+  adminSubtext: 'अपने क्लिनिक, डॉक्टर और मरीज़ों को एक जगह मैनेज करें।',
+  patientSubtext: 'अपॉइंटमेंट बुक करें और अपने स्वास्थ्य रिकॉर्ड आसानी से मैनेज करें।',
+  newBooking: 'नई बुकिंग',
+  quickView: 'क्विक व्यू',
+  totalDoctors: 'कुल डॉक्टर',
+  activePatients: 'सक्रिय मरीज़',
+  totalAppointments: 'अपॉइंटमेंट',
+  activeSlots: 'सक्रिय स्लॉट',
+  appointmentsOverview: 'अपॉइंटमेंट ओवरव्यू',
+  thisWeek: 'इस हफ्ते',
+  thisMonth: 'इस महीने',
+  todaysSchedule: 'आज का शेड्यूल',
+  booked: 'बुक्ड',
+  noSessionsToday: 'आज कोई सेशन नहीं',
+  appointmentStatus: 'अपॉइंटमेंट स्टेटस',
+  confirmed: 'कन्फर्म',
+  pending: 'पेंडिंग',
+  cancelled: 'कैंसल',
+  total: 'कुल',
+  recentActivity: 'हाल की गतिविधि',
+  viewAll: 'सभी देखें',
+  noRecentActivity: 'कोई हाल की गतिविधि नहीं।',
+  newAppointment: 'नई अपॉइंटमेंट',
+  bookedWith: 'के साथ बुक',
+  today: 'आज',
+  time: 'समय',
+  completed: 'पूर्ण',
+  adminDashboard: 'एडमिन डैशबोर्ड',
+  patientDashboard: 'मरीज़ डैशबोर्ड',
+
+  // Appointments Page
+  myAppointments: 'मेरी अपॉइंटमेंट',
+  allAppointments: 'सभी अपॉइंटमेंट',
+  filterByDate: 'तारीख़ से फ़िल्टर',
+  cancelAppointment: 'रद्द करें',
+  noAppointments: 'कोई अपॉइंटमेंट नहीं मिली',
+  patient: 'मरीज़',
+  doctor: 'डॉक्टर',
+  date: 'तारीख़',
+  status: 'स्टेटस',
+  actions: 'कार्रवाई',
+  payNow: 'भुगतान करें',
+
+  // Doctors Page
+  findDoctor: 'अपना डॉक्टर खोजें',
+  findDoctorSubtext: 'हमारे विशेषज्ञ डॉक्टरों में से खोजें',
+  searchDoctors: 'डॉक्टर खोजें...',
+  bookAppointment: 'अपॉइंटमेंट बुक करें',
+  viewProfile: 'प्रोफ़ाइल देखें',
+  available: 'उपलब्ध',
+  notAvailable: 'अनुपलब्ध',
+  experience: 'अनुभव',
+  fees: 'फ़ीस',
+  speciality: 'विशेषज्ञता',
+  allSpecialities: 'सभी',
+
+  // Admin Page
+  manageDoctors: 'डॉक्टर मैनेज करें',
+  addDoctor: 'डॉक्टर जोड़ें',
+  editDoctor: 'डॉक्टर एडिट करें',
+  deleteDoctor: 'डॉक्टर हटाएं',
+  manageSlots: 'स्लॉट मैनेज करें',
+  doctorName: 'डॉक्टर का नाम',
+  email: 'ईमेल',
+  phone: 'फ़ोन',
+  address: 'पता',
+
+  // Profile
+  myProfile: 'मेरी प्रोफ़ाइल',
+  editProfile: 'प्रोफ़ाइल एडिट करें',
+  saveChanges: 'बदलाव सेव करें',
+  name: 'नाम',
+  password: 'पासवर्ड',
+
+  // Reports
+  reportsTitle: 'रिपोर्ट और एनालिटिक्स',
+  downloadReport: 'रिपोर्ट डाउनलोड करें',
+
+  // Notifications
+  notificationsTitle: 'सूचनाएं',
+  noNotifications: 'अभी कोई सूचना नहीं',
+  upcomingAppointments: 'आगामी अपॉइंटमेंट',
+  tomorrowAt: 'कल',
+  todayAt: 'आज',
+  with: 'के साथ',
+
+  // Common
+  loading: 'लोड हो रहा है...',
+  search: 'खोजें',
+  close: 'बंद करें',
+  save: 'सेव करें',
+  cancel: 'रद्द करें',
+  delete: 'हटाएं',
+  edit: 'एडिट करें',
+  submit: 'जमा करें',
+  back: 'वापस',
+  next: 'अगला',
+  yes: 'हाँ',
+  no: 'नहीं',
+  or: 'या',
+  and: 'और',
+  from: 'से',
+  to: 'तक',
+
+  // Settings
+  settingsTitle: 'सेटिंग्स',
+  appearance: 'दिखावट',
+  darkMode: 'डार्क मोड',
+  lightMode: 'लाइट मोड',
+  themeDescription: 'चुनें कि ClinicDesk आपके डिवाइस पर कैसा दिखेगा',
+  languageDescription: 'इंटरफ़ेस के लिए अपनी पसंदीदा भाषा चुनें',
+  changePasswordDescription: 'अपने अकाउंट को सुरक्षित रखने के लिए अपना पासवर्ड अपडेट करें',
+  oldPassword: 'पुराना पासवर्ड',
+  newPassword: 'नया पासवर्ड',
+  confirmNewPassword: 'नए पासवर्ड की पुष्टि करें',
+  passwordChangedSuccess: 'पासवर्ड सफलतापूर्वक बदल गया!',
+  passwordMismatch: 'नए पासवर्ड मेल नहीं खाते',
+
+  // Email Preferences
+  emailPreferences: 'ईमेल पसंद',
+  manageEmails: 'मैनेज करें कि आप ईमेल कैसे प्राप्त करना चाहते हैं',
+  appointmentReminders: 'अपॉइंटमेंट रिमाइंडर',
+  appointmentRemindersDesc: 'अपॉइंटमेंट के लिए ईमेल रिमाइंडर प्राप्त करें',
+  marketingUpdates: 'मार्केटिंग अपडेट',
+  marketingUpdatesDesc: 'नई सुविधाओं के बारे में अपडेट प्राप्त करें',
+  systemNotifications: 'सिस्टम सूचनाएं',
+  systemNotificationsDesc: 'महत्वपूर्ण सिस्टम और सुरक्षा अलर्ट',
+
+  // Other Preferences
+  otherPreferences: 'अन्य पसंद',
+  customizeOtherSettings: 'अन्य एप्लिकेशन सेटिंग्स कस्टमाइज़ करें',
+  timeZone: 'समय क्षेत्र (Time Zone)',
+  dateFormat: 'दिनांक प्रारूप (Date Format)',
+  timeFormat: 'समय प्रारूप (Time Format)',
+
+  // Password Tips
+  passwordTips: 'पासवर्ड टिप्स',
+  atLeast8Chars: 'कम से कम 8 अक्षर का उपयोग करें',
+  includeUpperLower: 'बड़े और छोटे अक्षरों को शामिल करें',
+  addNumbersSymbols: 'संख्याएं और प्रतीक जोड़ें',
+  avoidPersonal: 'व्यक्तिगत जानकारी का उपयोग करने से बचें',
+
+  // Upgrade
+  upgradeToPro: 'प्रो में अपग्रेड करें',
+  unlockFeatures: 'उन्नत सुविधाओं को अनलॉक करें और अपनी उत्पादकता बढ़ाएं।',
+  upgradeNow: 'अभी अपग्रेड करें',
+
+  // Language
+  language: 'भाषा',
+  english: 'English',
+  hindi: 'हिन्दी',
+};
+
+export default hi;

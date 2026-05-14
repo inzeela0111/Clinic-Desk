@@ -2,9 +2,9 @@ import Doctor from "../models/doctorModel.js";
 
 //GET ALL DOCTORS
 
-const getDoctors =async (req,res) => {
-//  res.send("GET ALL DOCTORS !.......")   
-try {
+const getDoctors = async (req, res) => {
+  //  res.send("GET ALL DOCTORS !.......")   
+  try {
     const { speciality } = req.query;
     let query = {};
     if (speciality && speciality !== 'All') {
@@ -19,9 +19,9 @@ try {
 
 //GET SINGLE DOCTOR
 
-const getDoctor = async(req,res) => {
-//  res.send("GET DOCTOR !.......")  
- try {
+const getDoctor = async (req, res) => {
+  //  res.send("GET DOCTOR !.......")  
+  try {
     const doctor = await Doctor.findById(req.params.id);
     if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
     res.json(doctor);
@@ -33,19 +33,19 @@ const getDoctor = async(req,res) => {
 
 //CRETAE DOCTOR
 
-const createDoctor = async(req,res) => {
-    // res.send("DOCTOR CREATED !.......")
-     try {
+const createDoctor = async (req, res) => {
+  // res.send("DOCTOR CREATED !.......")
+  try {
     const { name, speciality, image, bio, experience, fees, isAvailable, isActive } = req.body;
-    const doctor = await Doctor.create({ 
-      name, 
-      speciality, 
-      image, 
-      bio, 
-      experience, 
-      fees, 
-      isAvailable, 
-      isActive 
+    const doctor = await Doctor.create({
+      name,
+      speciality,
+      image,
+      bio,
+      experience,
+      fees,
+      isAvailable,
+      isActive
     });
     res.status(201).json(doctor);
   } catch (error) {
@@ -55,9 +55,9 @@ const createDoctor = async(req,res) => {
 
 //UPDATE DR.
 
-const updateDoctor =async (req,res) => {
-    // res.send("DOCTOR UPDATED !...")
-     console.log("UPDATE DOCTOR REQUEST:", req.params.id, req.body);
+const updateDoctor = async (req, res) => {
+  // res.send("DOCTOR UPDATED !...")
+  console.log("UPDATE DOCTOR REQUEST:", req.params.id, req.body);
   try {
     const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
@@ -71,9 +71,9 @@ const updateDoctor =async (req,res) => {
 
 //DELETE DR.
 
-const deleteDoctor =async (req,res) => {
-    // res.send("DOCTOR DELETED !....")
-    try {
+const deleteDoctor = async (req, res) => {
+  // res.send("DOCTOR DELETED !....")
+  try {
     const doctor = await Doctor.findByIdAndDelete(req.params.id);
     if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
     res.json({ message: 'Doctor removed' });
@@ -84,6 +84,6 @@ const deleteDoctor =async (req,res) => {
 
 
 
-const doctorController = {getDoctors , getDoctor , createDoctor , updateDoctor , deleteDoctor}
+const doctorController = { getDoctors, getDoctor, createDoctor, updateDoctor, deleteDoctor }
 
 export default doctorController

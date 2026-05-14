@@ -3,7 +3,7 @@ import { api } from './api';
 export const dashboardApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getDashboardStats: builder.query({
-      query: () => '/admin/stats',
+      query: (range = 'week') => `/admin/stats?range=${range}`,
       providesTags: ['Dashboard'],
     }),
     getTodaySchedule: builder.query({

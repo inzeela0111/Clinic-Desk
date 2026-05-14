@@ -17,6 +17,8 @@ import DoctorSchedulePage from './pages/DoctorSchedulePage';
 import Layout from './components/layout/Layout';
 import NotificationsPage from './pages/NotificationsPage';
 import PatientsManagement from './pages/PatientsManagement';
+import SettingsPage from './pages/SettingsPage';
+import ContactPage from './pages/ContactPage';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -55,6 +57,8 @@ function App() {
           <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
           <Route path="/admin/patients" element={<AdminRoute><PatientsManagement /></AdminRoute>} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
       </Routes>
     </Router>

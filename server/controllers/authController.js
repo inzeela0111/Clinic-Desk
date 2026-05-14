@@ -1,115 +1,3 @@
-// import User from "../models/userModel.js"
-// import bcrypt from "bcryptjs";
-// import jwt from "jsonwebtoken"
-
-// const registerUser = async(req,res) => {
-
-//     const {name , email , phone , password} = req.body
-
-//   //check all fields are coming
-//     if(!name || !email || !phone || !password){
-//         res.status(409)
-//         throw new Error("PLEASE FILL ALL DETAILS ! ")
-//     }
-
-//    //check if user already  exists
-   
-//     let userNameExist = await User.findOne({name : name });
-//   let emailExist = await User.findOne({ email: email });
-//   let phoneExist = await User.findOne({ phone: phone });
-
-//   if (userNameExist || emailExist || phoneExist) {
-//     res.status(409);
-//     throw new Error("User Already Exist ! ........");
-//   }
-
-//  // Hash Password
-//   const salt = bcrypt.genSaltSync(10);
-//   const hashedPassword = bcrypt.hashSync(password , salt);
-
-// //   //REGISTER USER
-//   let user = await User.create({ name, email, phone, password:hashedPassword});
-
-//   if (!user) {
-//     res.status(400);
-//     throw new Error("User Not Created");
-//   }
-
-//   res.status(201).json({
-//     id : user._id,
-//     name : user.name ,
-//     bio : user.bio,
-//     email : user.email ,
-//     phone : user.phone ,
-//     isAdmin : user.isAdmin ,
-//     isActive : user.isActive , 
-//     credits : user.credits ,
-//     createdAt : user.createdAt,
-//     token : generateToken(user._id)
-//   })
-  
-
-
-//     res.send("USER REGISTERED !...")
-// }
-
-
-// //.......LOGIN User.................................................
-
-// const loginUser = async(req,res) => {
-
-//   const {email,password} = req.body;
-
-//   if ( !email || !password) {
-//     res.status(409);
-//     throw new Error("Please Fill All Details !.....");
-//   }
-//   //Check if user exits
-
-//   let user = await User.findOne({ email: email });
-
-//   if(user && await bcrypt.compare(password , user.password)){
-//     res.status(200).json({
-//     id : user._id,
-//     name : user.name ,
-//     email : user.email ,
-//     bio : user.bio ,
-//     phone : user.phone ,
-//     isAdmin : user.isAdmin ,
-//     isActive : user.isActive , 
-//     credits : user.credits ,
-//     createdAt : user.createdAt,
-//     token : generateToken(user._id)
-//     })
-   
-//   }else{
-//     res.status(400)
-//     throw new Error("INVALID CREDENTIALS!....")
-//   }
-
-
-//     res.send("USER LOGINED !...")
-// }
-
-
-// //PROTECTED CONTROLLER
-// const privateController = (req , res) => {
-//   // console.log(req.user)
-//   res.send(" I am Private Controller " + req.user.name)
-// }
-
-
-// //GENERATE TOKEN
-// const generateToken = (id) => {
-//   return jwt.sign({id} , process.env.JWT_SECRET , {expiresIn:'30d'})
-// }
-
-
-// const authController = {registerUser , loginUser ,privateController}
-// export default authController
-
-
-
 
 
 
@@ -127,11 +15,11 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, gender } = req.body;
 
     // Check all fields
-    if (!name || !email || !phone || !password) {
-      return res.status(400).json({ success: false, message: "Please fill all details" });
+    if (!name || !email || !phone || !password || !gender) {
+      return res.status(400).json({ success: false, message: "Please fill all details including gender" });
     }
 
     // Check if user already exists
@@ -154,21 +42,23 @@ const registerUser = async (req, res) => {
       name,
       email,
       phone,
+      gender,
       password: hashedPassword,
     });
 
     res.status(201).json({
       success: true,
       data: {
-        _id:       user._id,
-        name:      user.name,
-        email:     user.email,
-        phone:     user.phone,
-        image:     user.image,
-        isAdmin:   user.isAdmin,
-        isActive:  user.isActive,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        gender: user.gender,
+        image: user.image,
+        isAdmin: user.isAdmin,
+        isActive: user.isActive,
         createdAt: user.createdAt,
-        token:     generateToken(user._id),
+        token: generateToken(user._id),
       },
     });
 
@@ -209,15 +99,16 @@ const loginUser = async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
-        _id:       user._id,
-        name:      user.name,
-        email:     user.email,
-        phone:     user.phone,
-        image:     user.image,
-        isAdmin:   user.isAdmin,
-        isActive:  user.isActive,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        gender: user.gender,
+        image: user.image,
+        isAdmin: user.isAdmin,
+        isActive: user.isActive,
         createdAt: user.createdAt,
-        token:     generateToken(user._id),
+        token: generateToken(user._id),
       },
     });
 
@@ -250,25 +141,25 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    if (name)   user.name   = name;
-    if (phone)  user.phone  = phone;
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
     if (gender) user.gender = gender;
-    if (image)  user.image  = image;
+    if (image) user.image = image;
 
     const updated = await user.save();
 
     res.status(200).json({
       success: true,
       data: {
-        _id:       updated._id,
-        name:      updated.name,
-        email:     updated.email,
-        phone:     updated.phone,
-        gender:    updated.gender,
-        image:     updated.image,
-        isAdmin:   updated.isAdmin,
-        isActive:  updated.isActive,
-        token:     generateToken(updated._id),
+        _id: updated._id,
+        name: updated.name,
+        email: updated.email,
+        phone: updated.phone,
+        gender: updated.gender,
+        image: updated.image,
+        isAdmin: updated.isAdmin,
+        isActive: updated.isActive,
+        token: generateToken(updated._id),
       },
     });
   } catch (error) {
@@ -282,7 +173,7 @@ const updateProfile = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    
+
     if (!oldPassword || !newPassword) {
       return res.status(400).json({ success: false, message: "Please provide both old and new passwords" });
     }
@@ -303,7 +194,7 @@ const changePassword = async (req, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     user.password = bcrypt.hashSync(newPassword, salt);
-    
+
     await user.save();
 
     res.status(200).json({ success: true, message: "Password changed successfully" });
@@ -347,5 +238,5 @@ const getAllUsers = async (req, res) => {
 //   }
 // };
 
-const authController = {registerUser , loginUser , getProfile , updateProfile , changePassword, getAllUsers };
+const authController = { registerUser, loginUser, getProfile, updateProfile, changePassword, getAllUsers };
 export default authController;

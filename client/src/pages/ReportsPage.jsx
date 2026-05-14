@@ -1,5 +1,6 @@
 import { useGetDashboardStatsQuery } from '../services/dashboardApi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart2 } from 'lucide-react';
 
 const ReportsPage = () => {
   const { data, isLoading } = useGetDashboardStatsQuery();
@@ -7,9 +8,21 @@ const ReportsPage = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-        <h1 className="text-2xl font-bold text-slate-800">Reports & Analytics</h1>
-        <p className="text-slate-500 mt-1">Detailed performance metrics of the clinic.</p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-48 h-48 rounded-full bg-white opacity-10 blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-blue-300 opacity-20 blur-xl"></div>
+        
+        <div className="relative z-10">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+              <BarChart2 className="w-7 h-7 text-white" />
+            </div>
+            Reports & Analytics
+          </h1>
+          <p className="text-blue-100 mt-2 text-sm font-medium max-w-md">
+            Detailed performance metrics of the clinic.
+          </p>
+        </div>
       </div>
 
        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">

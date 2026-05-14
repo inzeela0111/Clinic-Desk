@@ -90,11 +90,21 @@ const UserProfilePage = () => {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-        <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-          <User className="w-6 h-6 text-blue-600" /> My Profile
-        </h1>
-        <p className="text-slate-500 mt-1">View and update your personal information.</p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 p-8 rounded-3xl shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-48 h-48 rounded-full bg-white opacity-10 blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-32 h-32 rounded-full bg-blue-300 opacity-20 blur-xl"></div>
+        
+        <div className="relative z-10">
+          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
+              <User className="w-7 h-7 text-white" />
+            </div>
+            My Profile
+          </h1>
+          <p className="text-blue-100 mt-2 text-sm font-medium max-w-md">
+            View and update your personal information.
+          </p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">

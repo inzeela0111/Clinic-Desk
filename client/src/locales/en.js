@@ -1,0 +1,181 @@
+const en = {
+  // Sidebar Navigation
+  dashboard: 'Dashboard',
+  smartBooking: 'Smart Booking',
+  appointments: 'Appointments',
+  doctors: 'Doctors',
+  reports: 'Reports',
+  notifications: 'Notifications',
+  admin: 'Admin',
+  adminPanel: 'Admin Panel',
+  patients: 'Patients',
+  logout: 'Logout',
+  settings: 'Settings',
+
+  // Settings Tabs
+  general: 'General',
+  preferences: 'Preferences',
+  account: 'Account',
+  security: 'Security',
+  billing: 'Billing',
+
+  // Dashboard
+  welcomeBack: 'Welcome back',
+  goodMorning: "Good morning! Here's what's happening today.",
+  goodAfternoon: "Good afternoon! Hope you're having a productive day.",
+  goodEvening: "Good evening! Time to review your daily progress.",
+  goodNight: "Good night! Resting well is part of being healthy.",
+  adminSubtext: 'Manage your clinic, doctors and patients in one streamlined workspace.',
+  patientSubtext: 'Book appointments and manage your health records seamlessly.',
+  newBooking: 'New Booking',
+  quickView: 'Quick View',
+  totalDoctors: 'Total Doctors',
+  activePatients: 'Active Patients',
+  totalAppointments: 'Appointments',
+  activeSlots: 'Active Slots',
+  appointmentsOverview: 'Appointments Overview',
+  thisWeek: 'This Week',
+  thisMonth: 'This Month',
+  todaysSchedule: "Today's Schedule",
+  booked: 'Booked',
+  noSessionsToday: 'No sessions today',
+  appointmentStatus: 'Appointment Status',
+  confirmed: 'Confirmed',
+  pending: 'Pending',
+  cancelled: 'Cancelled',
+  total: 'Total',
+  recentActivity: 'Recent Activity',
+  viewAll: 'View All',
+  noRecentActivity: 'No recent activity.',
+  newAppointment: 'New appointment',
+  bookedWith: 'booked with',
+  today: 'Today',
+  time: 'Time',
+  completed: 'Completed',
+  adminDashboard: 'Admin Dashboard',
+  patientDashboard: 'Patient Dashboard',
+
+  // Appointments Page
+  myAppointments: 'My Appointments',
+  allAppointments: 'All Appointments',
+  filterByDate: 'Filter by date',
+  cancelAppointment: 'Cancel',
+  noAppointments: 'No appointments found',
+  patient: 'Patient',
+  doctor: 'Doctor',
+  date: 'Date',
+  status: 'Status',
+  actions: 'Actions',
+  payNow: 'Pay Now',
+
+  // Doctors Page
+  findDoctor: 'Find Your Doctor',
+  findDoctorSubtext: 'Search from our expert medical professionals',
+  searchDoctors: 'Search doctors...',
+  bookAppointment: 'Book Appointment',
+  viewProfile: 'View Profile',
+  available: 'Available',
+  notAvailable: 'Not Available',
+  experience: 'Experience',
+  fees: 'Fees',
+  speciality: 'Speciality',
+  allSpecialities: 'All',
+
+  // Admin Page
+  manageDoctors: 'Manage Doctors',
+  addDoctor: 'Add Doctor',
+  editDoctor: 'Edit Doctor',
+  deleteDoctor: 'Delete Doctor',
+  manageSlots: 'Manage Slots',
+  doctorName: 'Doctor Name',
+  email: 'Email',
+  phone: 'Phone',
+  address: 'Address',
+
+  // Profile
+  myProfile: 'My Profile',
+  editProfile: 'Edit Profile',
+  saveChanges: 'Save Changes',
+  name: 'Name',
+  password: 'Password',
+
+  // Reports
+  reportsTitle: 'Reports & Analytics',
+  downloadReport: 'Download Report',
+
+  // Notifications
+  notificationsTitle: 'Notifications',
+  noNotifications: 'No notifications yet',
+  upcomingAppointments: 'Upcoming Appointments',
+  tomorrowAt: 'Tomorrow at',
+  todayAt: 'Today at',
+  with: 'with',
+
+  // Common
+  loading: 'Loading...',
+  search: 'Search',
+  close: 'Close',
+  save: 'Save',
+  cancel: 'Cancel',
+  delete: 'Delete',
+  edit: 'Edit',
+  submit: 'Submit',
+  back: 'Back',
+  next: 'Next',
+  yes: 'Yes',
+  no: 'No',
+  or: 'or',
+  and: 'and',
+  from: 'from',
+  to: 'to',
+
+  // Settings
+  settingsTitle: 'Settings',
+  appearance: 'Appearance',
+  darkMode: 'Dark Mode',
+  lightMode: 'Light Mode',
+  themeDescription: 'Customize how ClinicDesk looks on your device',
+  languageDescription: 'Choose your preferred language for the interface',
+  changePasswordDescription: 'Update your account password to keep it secure',
+  oldPassword: 'Old Password',
+  newPassword: 'New Password',
+  confirmNewPassword: 'Confirm New Password',
+  passwordChangedSuccess: 'Password changed successfully!',
+  passwordMismatch: 'New passwords do not match',
+
+  // Email Preferences
+  emailPreferences: 'Email Preferences',
+  manageEmails: 'Manage how you want to receive emails',
+  appointmentReminders: 'Appointment Reminders',
+  appointmentRemindersDesc: 'Receive email reminders for appointments',
+  marketingUpdates: 'Marketing Updates',
+  marketingUpdatesDesc: 'Receive updates about new features',
+  systemNotifications: 'System Notifications',
+  systemNotificationsDesc: 'Important system and security alerts',
+
+  // Other Preferences
+  otherPreferences: 'Other Preferences',
+  customizeOtherSettings: 'Customize other application settings',
+  timeZone: 'Time Zone',
+  dateFormat: 'Date Format',
+  timeFormat: 'Time Format',
+
+  // Password Tips
+  passwordTips: 'Password Tips',
+  atLeast8Chars: 'Use at least 8 characters',
+  includeUpperLower: 'Include uppercase & lowercase',
+  addNumbersSymbols: 'Add numbers and symbols',
+  avoidPersonal: 'Avoid using personal information',
+
+  // Upgrade
+  upgradeToPro: 'Upgrade to Pro',
+  unlockFeatures: 'Unlock advanced features and boost your productivity.',
+  upgradeNow: 'Upgrade Now',
+
+  // Language
+  language: 'Language',
+  english: 'English',
+  hindi: 'हिन्दी',
+};
+
+export default en;
