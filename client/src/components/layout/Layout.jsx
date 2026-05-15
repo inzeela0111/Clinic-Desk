@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
@@ -13,12 +13,20 @@ import { useGetMyAppointmentsQuery } from '../../services/appointmentsApi';
 const Layout = () => {
   const { user } = useSelector(state => state.auth);
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [pendingFeedback, setPendingFeedback] = useState(null);
   const searchRef = useRef(null);
+
+  // Close overlays on route change
+  useEffect(() => {
+    setIsSearchOpen(false);
+    setIsSidebarOpen(false);
+    setSearchQuery('');
+  }, [location.pathname]);
 
   // Fetch appointments to check for feedback
   const { data: myApps } = useGetMyAppointmentsQuery({}, { 
