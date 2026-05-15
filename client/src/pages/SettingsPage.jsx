@@ -104,10 +104,10 @@ const SettingsPage = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-5 sm:px-8 py-4 text-[11px] sm:text-sm font-black transition-all rounded-[1.5rem] relative whitespace-nowrap overflow-hidden group snap-center ${
+                className={`flex items-center gap-3 px-5 sm:px-8 py-4 text-[11px] sm:text-sm font-black transition-all rounded-[1.5rem] relative whitespace-nowrap overflow-hidden group snap-center shrink-0 ${
                   activeTab === tab.id 
                     ? 'text-blue-600 dark:text-blue-400' 
-                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                 }`}
               >
                 {activeTab === tab.id && (
